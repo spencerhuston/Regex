@@ -44,7 +44,8 @@ class Regex
 	public:
 		std::string expand_range(std::string expression);
 		std::vector<Token> scan(std::string expression);
-		void parse(std::vector<Token> tokens);
+		Node * parse(std::vector<Token> tokens);
+		void run(Node * start, std::string str);
 
 		//helper methods
 		void print_scan(std::vector<Token> tokens);

@@ -126,9 +126,9 @@ std::vector<Regex::Token> Regex::scan(std::string expression)
 	return tokens;
 }
 
-void Regex::parse(std::vector<Regex::Token> tokens)
+Node * Regex::parse(std::vector<Regex::Token> tokens)
 {
-	Node * start;
+	Node * start = new Node();
 	start->state = 1;
 	
 	Node * current = start;
@@ -139,30 +139,85 @@ void Regex::parse(std::vector<Regex::Token> tokens)
 		{
 			case Regex::CHARACTER:
 			{
-				Edge * trans;
+				Edge * trans = new Edge();
 				trans->c = token.c;
 				trans->in = current;
+				trans->in->edges.push_back(trans);
 				
-				Node * out;
+				Node * out = new Node();
+				out->state = (current->state)++;
 				trans->out = out;
+				
 				current = out;
+				current->prev = trans->in;
 			}
 				break;
 			case Regex::STAR:
+			{
+
+			}
 				break;
 			case Regex::PLUS:
+			{
+
+			}
 				break;
 			case Regex::QUESTION:
+			{
+
+			}
 				break;
 			case Regex::OR:
+			{
+
+			}
 				break;
 			case Regex::EXPRESSION:
+			{
+
+			}
 				break;
 			default:
 				std::cout << "Parsing error: " << token.op << '\n';
-				return;
+				return NULL;
 		}
 	}
+
+	return start;
+}
+
+void Regex::run(Node * start, std::string str)
+{
+	int i = 0;
+
+	while (start)
+	{
+		if (!(i < str.length()) && start->edges.size() == 0)
+		{
+			std::cout << "Match\n";
+			return;
+		}
+
+		bool match = false;
+		for (auto const & edge: start->edges)
+		{
+			if (edge->c == str[i] || (isblank(edge->c) && edge->sigma))
+			{
+				match = true;
+				start = edge->out;
+				i++;
+
+				break;	
+			}
+		}
+
+		if (!match)
+		{
+			std::cout << "No match\n";
+			return;
+		}
+	}	
+	std::cout << "Match\n";
 }
 
 void Regex::print_scan(std::vector<Regex::Token> tokens)

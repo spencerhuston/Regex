@@ -11,7 +11,7 @@ class Node
 {
 	public:
 		int state;
-		std::vector<Edge *> trans;
+		std::vector<Edge *> edges;
 		Node * prev;
 };
 

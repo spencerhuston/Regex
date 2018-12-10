@@ -9,6 +9,8 @@ class Edge
 {
 	public:
 		char c;
+		bool sigma;
+
 		Node * in;
 		Node * out;
 };

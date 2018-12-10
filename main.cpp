@@ -19,36 +19,12 @@ int main(int argc, char ** argv)
 		    		"	- = list alphabet in [ ]\n" +
 		    		"	( ) = surround or's, ex: (a|b)\n";
 
-	if (argc == 1)	
-		for ( ;; )
-		{
-			Regex regex;
-			std::string expr;
-				
-			std::cout << "> ";
-			std::cin >> expr;
-
-			if (expr == "help")
-			{
-				std::cout << HELP_MSG;		
-				continue;
-			}
-			else if (expr != "quit")
-			{
-				expr = regex.expand_range(expr);
-				if (expr.empty())
-					return 1;
-				regex.set_tokens(regex.scan(expr));
-				regex.print_scan(regex.get_tokens());
-			}
-			else
-				break;
-		}
-	else if (argc == 2)
+	if (argc == 3)
 	{
 		Regex regex;
 		std::string expr = argv[1];
-		
+		std::string str = argv[2];
+
 		if (expr == "help")
 			std::cout << HELP_MSG;
 		else
@@ -58,6 +34,9 @@ int main(int argc, char ** argv)
 				return 1;
 			regex.set_tokens(regex.scan(expr));
 			regex.print_scan(regex.get_tokens());
+			std::cout << '\n';
+			Node * start = regex.parse(regex.get_tokens());
+			regex.run(start, str);
 		}
 	}
 
