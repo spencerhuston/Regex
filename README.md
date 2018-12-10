@@ -1,4 +1,13 @@
 # Regex
 C++ based regex (personal project)
 
-Scanner done, currently deciding how to implement parser (pushdown vs. parse tree)
+Character support:
+  *
+  +
+  ?
+  |
+  \[ - ]
+  ( ) (with nesting)
+  concatenation
+
+Scanner done, parser in progress
