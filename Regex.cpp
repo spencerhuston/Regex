@@ -164,8 +164,20 @@ Node * Regex::parse(std::vector<Regex::Token> tokens)
 				break;
 			case Regex::STAR:
 			{
+				//cycle back to itself
 				current = current->prev;
-				current->edges[current->edges.size() - 1]->out = current;	
+				current->edges[current->edges.size() - 1]->out = current;
+				
+				Node * out = new Node();
+				Edge * zero = new Edge();
+				zero->in = current;
+				zero->out = out;
+				zero->sigma = true;
+
+				current->edges.push_back(zero);
+
+				out->prev = current;
+				current = out;
 			}
 				break;
 			case Regex::PLUS:
@@ -175,7 +187,7 @@ Node * Regex::parse(std::vector<Regex::Token> tokens)
 				break;
 			case Regex::QUESTION:
 			{
-
+				
 			}
 				break;
 			case Regex::OR:
@@ -205,7 +217,7 @@ void Regex::run(Node * start, std::string str)
 
 	while (start)
 	{
-		if (!(i < str.length()) && start->last)
+		if (i == str.length() && start->last)
 		{
 			std::cout << "Match\n";
 			return;
@@ -214,11 +226,11 @@ void Regex::run(Node * start, std::string str)
 		bool match = false;
 		for (auto const & edge: start->edges)
 		{
-			if (edge->c == str[i] || (isblank(edge->c) && edge->sigma))
+			if (edge->c == str[i] || edge->sigma)
 			{
 				match = true;
 				start = edge->out;
-				i++;
+				if (!(edge->sigma)) i++;
 
 				break;	
 			}
