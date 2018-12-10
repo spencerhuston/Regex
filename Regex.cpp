@@ -133,6 +133,8 @@ Node * Regex::parse(std::vector<Regex::Token> tokens)
 	
 	Node * current = start;
 
+	int index = 0;
+
 	for (auto const & token: tokens)
 	{
 		switch (token.op)
@@ -144,17 +146,26 @@ Node * Regex::parse(std::vector<Regex::Token> tokens)
 				trans->in = current;
 				trans->in->edges.push_back(trans);
 				
-				Node * out = new Node();
-				out->state = (current->state)++;
-				trans->out = out;
+				if (index != 0 && tokens[index - 1].op == Regex::OR)
+				{
+					trans->out = current->edges[current->edges.size() - 2]->out;	
+					current = trans->out;
+				}
+				else
+				{
+					Node * out = new Node();
+					out->state = (current->state)++;
+					trans->out = out;
+					current = out;
+				}
 				
-				current = out;
 				current->prev = trans->in;
 			}
 				break;
 			case Regex::STAR:
 			{
-
+				current = current->prev;
+				current->edges[current->edges.size() - 1]->out = current;	
 			}
 				break;
 			case Regex::PLUS:
@@ -168,20 +179,22 @@ Node * Regex::parse(std::vector<Regex::Token> tokens)
 			}
 				break;
 			case Regex::OR:
-			{
-
-			}
+				current = current->prev;
 				break;
 			case Regex::EXPRESSION:
 			{
-
+				
 			}
 				break;
 			default:
 				std::cout << "Parsing error: " << token.op << '\n';
 				return NULL;
 		}
+
+		index++;
 	}
+
+	current->last = true;
 
 	return start;
 }
@@ -192,7 +205,7 @@ void Regex::run(Node * start, std::string str)
 
 	while (start)
 	{
-		if (!(i < str.length()) && start->edges.size() == 0)
+		if (!(i < str.length()) && start->last)
 		{
 			std::cout << "Match\n";
 			return;

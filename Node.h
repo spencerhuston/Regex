@@ -11,6 +11,7 @@ class Node
 {
 	public:
 		int state;
+		bool last;
 		std::vector<Edge *> edges;
 		Node * prev;
 };
