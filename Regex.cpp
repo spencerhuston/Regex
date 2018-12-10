@@ -126,9 +126,43 @@ std::vector<Regex::Token> Regex::scan(std::string expression)
 	return tokens;
 }
 
-void Regex::parse()
+void Regex::parse(std::vector<Regex::Token> tokens)
 {
+	Node * start;
+	start->state = 1;
+	
+	Node * current = start;
 
+	for (auto const & token: tokens)
+	{
+		switch (token.op)
+		{
+			case Regex::CHARACTER:
+			{
+				Edge * trans;
+				trans->c = token.c;
+				trans->in = current;
+				
+				Node * out;
+				trans->out = out;
+				current = out;
+			}
+				break;
+			case Regex::STAR:
+				break;
+			case Regex::PLUS:
+				break;
+			case Regex::QUESTION:
+				break;
+			case Regex::OR:
+				break;
+			case Regex::EXPRESSION:
+				break;
+			default:
+				std::cout << "Parsing error: " << token.op << '\n';
+				return;
+		}
+	}
 }
 
 void Regex::print_scan(std::vector<Regex::Token> tokens)

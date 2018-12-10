@@ -1,12 +1,16 @@
 #ifndef EDGE_H
 #define EDGE_H
 
+#include "Node.h"
+
+class Node;
+
 class Edge
 {
 	public:
-		Node * state1;
-		Node * state2;
-		char transition;
+		char c;
+		Node * in;
+		Node * out;
 };
 
 #endif

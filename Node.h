@@ -3,11 +3,16 @@
 
 #include <vector>
 
+#include "Edge.h"
+
+class Edge;
+
 class Node
 {
 	public:
-		std::vector<Edge *> edges;
 		int state;
+		std::vector<Edge *> trans;
+		Node * prev;
 };
 
 #endif

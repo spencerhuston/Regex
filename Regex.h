@@ -9,8 +9,6 @@
 
 #include <iostream>
 
-class Node;
-
 #include "Edge.h"
 #include "Node.h"
 
@@ -46,7 +44,7 @@ class Regex
 	public:
 		std::string expand_range(std::string expression);
 		std::vector<Token> scan(std::string expression);
-		void parse();
+		void parse(std::vector<Token> tokens);
 
 		//helper methods
 		void print_scan(std::vector<Token> tokens);
