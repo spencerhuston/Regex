@@ -182,12 +182,18 @@ Node * Regex::parse(std::vector<Regex::Token> tokens)
 				break;
 			case Regex::PLUS:
 			{
+				Edge * trans = new Edge();
+				trans->c = current->prev->edges[current->prev->edges.size() - 1]->c;
+				trans->in = current, trans->out = current;
 
+				current->edges.push_back(trans);
 			}
 				break;
 			case Regex::QUESTION:
 			{
-				
+				Edge * zero = new Edge();
+				zero->sigma = true, zero->out = current, zero->in = current->prev;
+				current->prev->edges.push_back(zero);		
 			}
 				break;
 			case Regex::OR:
@@ -195,7 +201,7 @@ Node * Regex::parse(std::vector<Regex::Token> tokens)
 				break;
 			case Regex::EXPRESSION:
 			{
-				
+					
 			}
 				break;
 			default:
