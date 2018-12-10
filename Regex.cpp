@@ -1,89 +1,129 @@
 #include "Regex.h"
 
-void Regex::scan(std::string expression)
+//expands [ - ]
+std::string Regex::expand_range(std::string expression)
 {
-	this->expression = expression;
+	std::string new_expr;
+	std::vector<char> local;
+	bool in_bracket = false;
 
-	//check if number is in brace
-	//check if previous char was escape character
-	bool in_brace = false, escape = false;
+	for (int i = 0; i < expression.length(); i++)
+	{
+		char c = expression[i];
 
-	for (char const &c: expression)
+		if (c == '[')
+		{
+			if (in_bracket)
+			{
+				std::cout << "Cannot have nested brackets\n";
+				return "";
+			}
+
+			in_bracket = true;
+			local.clear();	
+
+			new_expr += '(';
+		}
+		else if (c == ']')
+		{
+			if (!in_bracket)
+			{
+				std::cout << "Missing \'[\'\n";
+				return "";
+			}
+
+			for (int j = 0; j < local.size() - 1; j++)
+			{
+				new_expr += local[j];
+				new_expr += '|';
+			}
+
+			new_expr += local[local.size() - 1];
+			new_expr += ')';
+
+			in_bracket = false;
+		}
+		else if (c == '-' && in_bracket && (i >= 2 || expression.length() - i >= 2))
+		{	
+			char left = expression[i - 1];
+			char right = expression[i + 1];
+					
+			for (int j = (int)left; j <= (int)right; j++)
+				local.push_back((char)j);	
+		}
+		else if (!in_bracket)
+			new_expr += c;
+	}
+
+	std::cout << new_expr << '\n';
+
+	return new_expr;
+}
+
+std::vector<Regex::Token> Regex::scan(std::string expression)
+{
+	std::vector<Token> tokens;
+
+	bool escape = false;
+
+	for (int i = 0; i < expression.length(); i++)
 	{
 		Token t;
+
+		char c = expression[i]; 
 	
+		if (c == ')')
+			continue;
+
 		if (c == '\\')
 		{
-			if (escape == false)
+			if (!escape)
 			{
 				escape = true;
 				continue;
 			}
-			else if (escape == true)
-				t.op = Regex::CHARACTER;	
 		}
-		else if (isalpha(c))
-		{
-			if (escape)
-			{
-				std::cout << "Invalid format, cannot escape a letter\n";
-				return;
-			}
-
-			t.op = Regex::CHARACTER;
-		}
-		else if (isdigit(c))
-		{
-			if (escape)
-			{
-				std::cout << "Invalid format, cannot escape a number\n";
-				return;
-			}
-
-			//not in a brace (not a counter, therefore does not belong in alphabet)
-			if (!in_brace)
-				t.op = Regex::NUMBER;
-			else
-				t.op = Regex::COUNTER;		
+		else if (c == '(')
+		{	
+			int parens = 0;
 			
-			t.number = true;
-		}
-		else if (!escape)
-		{
-			if (c == '*') t.op = Regex::STAR;
-			else if (c == '+') t.op = Regex::PLUS;
-			else if (c == '?') t.op = Regex::QUESTION;
-			else if (c == '{') 
+			for (int j = i; j < expression.length(); j++)
 			{
-				t.op = Regex::LEFT_BRACE;
-				in_brace = true;
-			}	
-			else if (c == '}') 
-			{
-				t.op = Regex::RIGHT_BRACE;
-				in_brace = false;
-			}	
-			else if (c == '^') t.op = Regex::ARROW;	
-			else if (c == '$') t.op = Regex::DOLLAR;	
-			else if (c == '[') t.op = Regex::LEFT_BRACKET;	
-			else if (c == ']') t.op = Regex::RIGHT_BRACKET;
-			else if (c == '(') t.op = Regex::LEFT_PAREN;
-			else if (c == ')') t.op = Regex::RIGHT_PAREN;	
-			else if (c == '|') t.op = Regex::OR;	
-			else if (c == ',') t.op = Regex::COMMA;
-			else if (c == '-') t.op = Regex::DASH;
+				if (expression[j] == '(') parens++;
+				else if (expression[j] == ')') parens--;
+				
+				if (j != i && parens == 0)
+				{
+					t.expression = scan(expression.substr(i + 1, j - i - 1));			
+					t.op = Regex::EXPRESSION;
+					
+					i = j;
+
+					break;
+				}
+			}
 		}
-		else if (escape)
+		else if (c == '*') t.op = Regex::STAR;
+		else if (c == '+') t.op = Regex::PLUS;
+		else if (c == '?') t.op = Regex::QUESTION;
+		else if (c == '|') t.op = Regex::OR;
+		else if (isalnum(c))
 		{
 			t.op = Regex::CHARACTER;
-
-			escape = false;
+			t.number = (isdigit(c)) ? true : false;
 		}
 		
-	
+		if (escape)
+		{
+			t.op = Regex::CHARACTER;
+			escape = false;
+		}
+
 		t.c = c;
-		tokens.push_back(t);
+		tokens.push_back(t);	
 	}
+
+	return tokens;
 }
 
 void Regex::parse()
@@ -91,26 +131,23 @@ void Regex::parse()
 
 }
 
-void Regex::add_alpha(char c)
+void Regex::print_scan(std::vector<Regex::Token> tokens)
 {
-	if (std::find(alphabet.begin(), alphabet.end(), c) == alphabet.end())
-		alphabet.push_back(c);
-}
-
-void Regex::print_scan()
-{
-	for (int i = 0; i < alphabet.size(); i++)
-		std::cout << alphabet[i];
-	std::cout << '\n';
-
+	std::cout << '(' << ' ';
 	for (int i = 0; i < tokens.size(); i++)
 	{
-		std::cout << tokens[i].op;
-		if (tokens[i].op == Regex::CHARACTER)
-			std::cout << ">" << tokens[i].c;
-		else if (tokens[i].op == Regex::NUMBER || tokens[i].op == Regex::COUNTER)
-			std::cout << ">" << (int)tokens[i].c - 48;
-		std::cout << " ";
+		if (tokens[i].op == Regex::EXPRESSION)
+			print_scan(tokens[i].expression);
+		else if (tokens[i].op == Regex::CHARACTER)
+		{
+			std::cout << tokens[i].op << '>';
+			if (tokens[i].number)
+				std::cout << (int)(tokens[i].c) - 48 << ' ';
+			else
+				std::cout << tokens[i].c << ' ';
+		}
+		else
+			std::cout << tokens[i].op << ' ';
 	}
-	std::cout << '\n';
+	std::cout << ')' << ' ';
 }

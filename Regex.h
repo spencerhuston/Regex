@@ -20,25 +20,13 @@ class Regex
 		// 0 *
 		// 1 +
 		// 2 ?
-		// 3 {
-		// 4 }
-		// 5 ^
-		// 6 $
-		// 7 [
-		// 8 ]
-		// 9 |
-		// 10 ,
-		// 11 -
-		// 12 [a-zA-Z] (letter, in alphabet)
-		// 13 [0-9] (number, in alphabet)
-		// 14 {0-9} (counter, not in alphabet)
-		// 15 (
-		// 16 )
-		enum Ops { STAR, PLUS, QUESTION, LEFT_BRACE, RIGHT_BRACE, 
-			   ARROW, DOLLAR, LEFT_BRACKET, RIGHT_BRACKET, 
-			   OR, COMMA, DASH, CHARACTER, NUMBER, COUNTER,
-	       		   LEFT_PAREN, RIGHT_PAREN }; 
-		
+		// 3 |
+		// 4 [a-zA-Z0-9]
+		// 5 concatenation: ab = a then b
+		// 6 another expression
+		enum Ops { STAR, PLUS, QUESTION, 
+			   OR, CHARACTER, EXPRESSION };
+
 		struct Token
 		{
 			Ops op;
@@ -46,21 +34,28 @@ class Regex
 			
 			//used to convert from raw ascii since all characters are stored as char
 			bool number;
+
+			std::vector<Token> expression;
 		};
 
-		std::string expression;
+		std::string _expression;
 		
-		std::vector<char> alphabet;
-		std::vector<Token> tokens;
+		std::vector<Token> _tokens;
 		std::vector<Node> states;
 
 	public:
-		void scan(std::string expression);
+		std::string expand_range(std::string expression);
+		std::vector<Token> scan(std::string expression);
 		void parse();
 
 		//helper methods
-		void add_alpha(char c);
-		void print_scan();
+		void print_scan(std::vector<Token> tokens);
+
+		inline void set_tokens(std::vector<Token> tokens)
+		{ _tokens = tokens; }
+
+		inline std::vector<Token> get_tokens()
+		{ return _tokens; }
 };
 
 #endif

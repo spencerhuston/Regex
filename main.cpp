@@ -35,8 +35,11 @@ int main(int argc, char ** argv)
 			}
 			else if (expr != "quit")
 			{
-				regex.scan(expr);
-				regex.print_scan();
+				expr = regex.expand_range(expr);
+				if (expr.empty())
+					return 1;
+				regex.set_tokens(regex.scan(expr));
+				regex.print_scan(regex.get_tokens());
 			}
 			else
 				break;
@@ -50,8 +53,11 @@ int main(int argc, char ** argv)
 			std::cout << HELP_MSG;
 		else
 		{
-			regex.scan(expr);
-			regex.print_scan();
+			expr = regex.expand_range(expr);
+			if (expr.empty())
+				return 1;
+			regex.set_tokens(regex.scan(expr));
+			regex.print_scan(regex.get_tokens());
 		}
 	}
 
