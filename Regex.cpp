@@ -1,9 +1,16 @@
 #include "Regex.h"
 
-//expands [ - ]
+// expands [x-z] into (x|y|z), makes single pass scanning possible
+//
+//	params:	std::string expression, takes in the original expression to re-format for actual scanner
+//
+//	return:	std::string, returns the re-formatted version of the original input string
+//
 std::string Regex::expand_range(std::string expression)
 {
 	std::string new_expr;
+
+	//stores what's inside the square brackets
 	std::vector<char> local;
 	bool in_bracket = false;
 
@@ -32,6 +39,7 @@ std::string Regex::expand_range(std::string expression)
 				return "";
 			}
 
+			//end of [x-z] hit, fills new expression with x|y|z)
 			for (int j = 0; j < local.size() - 1; j++)
 			{
 				new_expr += local[j];
@@ -44,7 +52,8 @@ std::string Regex::expand_range(std::string expression)
 			in_bracket = false;
 		}
 		else if (c == '-' && in_bracket && (i >= 2 || expression.length() - i >= 2))
-		{	
+		{
+			//gets range of characters in [x-z] and stores them in vector for use when ] is hit	
 			char left = expression[i - 1];
 			char right = expression[i + 1];
 					
@@ -58,6 +67,12 @@ std::string Regex::expand_range(std::string expression)
 	return new_expr;
 }
 
+// Scans the re-formatted expression and tokenizes it, also deals with escaped characters
+//	
+//	param: std::string expression, the re-formatted one
+//
+//	return: std::vector<Regex::Token>, token stream of the given expression
+//
 std::vector<Regex::Token> Regex::scan(std::string expression)
 {
 	std::vector<Token> tokens;
@@ -69,7 +84,8 @@ std::vector<Regex::Token> Regex::scan(std::string expression)
 		Token t;
 
 		char c = expression[i]; 
-	
+
+		//skips over because it is handled when ( is hit	
 		if (c == ')')
 			continue;
 
@@ -84,7 +100,8 @@ std::vector<Regex::Token> Regex::scan(std::string expression)
 		else if (c == '(')
 		{	
 			int parens = 0;
-			
+		
+			//finds matching ) and creates sub-stream for tokens inside the subexpression	
 			for (int j = i; j < expression.length(); j++)
 			{
 				if (expression[j] == '(') parens++;
@@ -100,7 +117,7 @@ std::vector<Regex::Token> Regex::scan(std::string expression)
 					break;
 				}
 			}
-		}
+		} //else match corresponding token
 		else if (c == '*') t.op = Regex::STAR;
 		else if (c == '+') t.op = Regex::PLUS;
 		else if (c == '?') t.op = Regex::QUESTION;
@@ -111,6 +128,7 @@ std::vector<Regex::Token> Regex::scan(std::string expression)
 			t.number = (isdigit(c)) ? true : false;
 		}
 		
+		//if escaped character override token type to be a CHARACTER
 		if (escape)
 		{
 			t.op = Regex::CHARACTER;
@@ -124,6 +142,15 @@ std::vector<Regex::Token> Regex::scan(std::string expression)
 	return tokens;
 }
 
+// Parses the token stream generated during scanning and constructs a corresponding NFA
+// roughly according to Thompson's construction algorithm
+//
+//	params: std::vector<Regex::Token> tokens, the token stream made during scanning
+//		Node * start, the starting state (used for recursive calls for sub-expressions)
+//		bool is_sub, indicates whether current expression is a sub-expression, makes sure end-state is not marked as a matching state
+//
+//	return: Node *, returns the end-state of the current expression (also used for sub-expressions)
+//
 Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 {
 	Node * current = start;
@@ -134,6 +161,7 @@ Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 	{
 		switch (token.op)
 		{
+			//constructs new transition edge and new state and connects the two
 			case Regex::CHARACTER:
 			{
 				Edge * trans = new Edge();
@@ -141,6 +169,7 @@ Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 				trans->in = current;
 				trans->in->edges.push_back(trans);
 				
+				//if previous token was an OR, match the 
 				if (index != 0 && tokens[index - 1].op == Regex::OR)
 				{
 					if (index > 1 && tokens[index - 2].op == Regex::EXPRESSION)
@@ -166,6 +195,8 @@ Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 				current->prev = trans->in;
 			}
 				break;
+			//takes previous edge from concatenation (by default) and connects it to its own starting state
+			//then constructs new empty transition and new state and connects those
 			case Regex::STAR:
 			{
 				//cycle back to itself
@@ -184,6 +215,8 @@ Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 				current = out;
 			}
 				break;
+			//Constructs new edge that cycles to current state
+			//The *1 or more* aspect is done by previous concatenation done by default
 			case Regex::PLUS:
 			{
 				Edge * trans = new Edge();
@@ -193,6 +226,7 @@ Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 				current->edges.push_back(trans);
 			}
 				break;
+			//functions the same as OR but constructs new empty transition
 			case Regex::QUESTION:
 			{
 				Edge * zero = new Edge();
@@ -200,9 +234,12 @@ Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 				current->prev->edges.push_back(zero);		
 			}
 				break;
+			//goes back a state, the OR is checked by a concatenation and new edge is matched with
+			//original and next states of other character transition from first part of OR
 			case Regex::OR:
 				current = current->prev;
 				break;
+			//still working on
 			case Regex::EXPRESSION:
 			{
 				Node * expr_start = current;
@@ -226,18 +263,28 @@ Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 	return current;
 }
 
+// Simulates the NFA with a given string to match
+//	
+//	params: Node * start, the starting state of the NFA
+//		std::string str, the string to match
+//
+//	return: none, void
+//	
 void Regex::run(Node * start, std::string str)
 {
 	int i = 0;
 
 	while (start)
 	{
+		//matched if no more of input string to read
+		//and the current state is a match
 		if (i == str.length() && start->last)
 		{
 			std::cout << "Match\n";
 			return;
 		}
 
+		//checks all edges against current character in input string
 		bool match = false;
 		for (auto const & edge: start->edges)
 		{
@@ -245,6 +292,8 @@ void Regex::run(Node * start, std::string str)
 			{
 				match = true;
 				start = edge->out;
+				
+				//if empty transition don't advance in the input string
 				if (!(edge->sigma)) i++;
 
 				break;	
@@ -260,6 +309,7 @@ void Regex::run(Node * start, std::string str)
 	std::cout << "Match\n";
 }
 
+//used for testing purposes for scanning phase
 void Regex::print_scan(std::vector<Regex::Token> tokens)
 {
 	std::cout << '(' << ' ';

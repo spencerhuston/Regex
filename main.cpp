@@ -24,23 +24,25 @@ int main(int argc, char ** argv)
 	}
 	else
 	{
-		for (int i = 2; i < argc; i++)
-		{
-			Regex regex;
-			std::string expr = argv[1];
-			std::string str = argv[i];
+		Regex regex;
+		std::string expr = argv[1];
+		//std::string str = argv[i];
 				
-			expr = regex.expand_range(expr);
-			if (expr.empty())
-				return 1;
-			
-			regex.set_tokens(regex.scan(expr));
+		expr = regex.expand_range(expr);
+		if (expr.empty())
+			return 1;
 		
-			Node * start = new Node();	
-			Node * last = regex.parse(regex.get_tokens(), start, false);
-
-			regex.run(start, str);
-		}
+		//get token list from scanner	
+		regex.set_tokens(regex.scan(expr));
+	
+		//Get end state from parser	
+		Node * start = new Node();	
+		Node * last = regex.parse(regex.get_tokens(), start, false);
+		
+		//run each string in argument list
+		for (int i = 2; i < argc; i++)
+			regex.run(start, std::string(argv[i]));
+		
 	}
 
 	return 0;

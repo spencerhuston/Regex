@@ -8,9 +8,13 @@ class Node;
 class Edge
 {
 	public:
+		//character for transition
 		char c;
+		
+		//transition is empty
 		bool sigma;
 
+		//states at beginning and end of transition
 		Node * in;
 		Node * out;
 };
