@@ -7,7 +7,7 @@ To run (single quotes are essential around the arguments):
 
 Support
 
-    Characters: *, +, ?, |, \[ - ], \\, ( ) with nesting, and concatenation
+    Characters: *, +, ?, |, \[ - ], \, ( ) with nesting, and concatenation
     Other: variadic argument list, -h or --help to display usage/characters
 
 Scanner done, parser in progress
