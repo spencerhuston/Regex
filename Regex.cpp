@@ -126,11 +126,8 @@ std::vector<Regex::Token> Regex::scan(std::string expression)
 	return tokens;
 }
 
-Node * Regex::parse(std::vector<Regex::Token> tokens)
+Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 {
-	Node * start = new Node();
-	start->state = 1;
-	
 	Node * current = start;
 
 	int index = 0;
@@ -148,14 +145,23 @@ Node * Regex::parse(std::vector<Regex::Token> tokens)
 				
 				if (index != 0 && tokens[index - 1].op == Regex::OR)
 				{
-					trans->out = current->edges[current->edges.size() - 2]->out;	
-					current = trans->out;
+					if (index > 1 && tokens[index - 2].op == Regex::EXPRESSION)
+					{
+						trans->out = current->next;
+						current = trans->out;	
+					}
+					else
+					{
+						trans->out = current->edges[current->edges.size() - 2]->out;	
+						current = trans->out;
+					}
 				}
 				else
 				{
 					Node * out = new Node();
 					out->state = (current->state)++;
 					trans->out = out;
+					current->next = out;
 					current = out;
 				}
 				
@@ -201,7 +207,11 @@ Node * Regex::parse(std::vector<Regex::Token> tokens)
 				break;
 			case Regex::EXPRESSION:
 			{
-					
+				Node * expr_start = current;
+				current = parse(token.expression, current, true);			
+				
+				current->prev = expr_start;
+				current->prev->next = current;
 			}
 				break;
 			default:
@@ -212,9 +222,10 @@ Node * Regex::parse(std::vector<Regex::Token> tokens)
 		index++;
 	}
 
-	current->last = true;
+	if (!is_sub)
+		current->last = true;
 
-	return start;
+	return current;
 }
 
 void Regex::run(Node * start, std::string str)

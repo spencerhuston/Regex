@@ -35,8 +35,9 @@ int main(int argc, char ** argv)
 		regex.set_tokens(regex.scan(expr));
 		regex.print_scan(regex.get_tokens());
 		std::cout << '\n';
-		
-		Node * start = regex.parse(regex.get_tokens());
+	
+		Node * start = new Node();	
+		Node * last = regex.parse(regex.get_tokens(), start, false);
 		regex.run(start, str);
 		std::cout << '\n';
 	}

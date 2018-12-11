@@ -13,7 +13,7 @@ class Node
 		int state;
 		bool last;
 		std::vector<Edge *> edges;
-		Node * prev;
+		Node * prev, * next;
 };
 
 #endif
