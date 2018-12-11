@@ -2,33 +2,57 @@
 
 (cd .. && make clean)
 (cd .. && make)
+(cd .. && rm *.gch)
 clear
 
 function runtest {
-	args=$1
-	
-	../regex.exe $args > r$2.out
-	diff r$2.out r$2.org > diff.out
+
+	empty=''
+	if [ $# == 8 ]; then
+		empty=$8
+	fi
+	../regex.exe $2 $3 $4 $5 $6 $7 "$empty"> r$1.out
+	diff r$1.out r$1.org > diff.out
 	if [ $? -eq 0 ]; then
-		echo Test passed...;
+		echo Test $1 passed...;
 	else
-		echo Test Failed
+		echo Test $1 Failed
 		echo ------ Your Output ----------
-		cat r$2.out
+		cat r$1.out
 		echo ------ Expected Output ------
-		cat r$2.org
+		cat r$1.org
 		echo ------ Difference -----------
 		cat diff.out
 		echo -----------------------------
 	fi
+
+	echo 
 }
 
 function printResults {
+
+	echo Individual character tests
+	echo --------------------------	
+	# concatenation
+	runtest '1' 'ab' 'a' 'b' 'ab' 'ba' 'c'
 	
-	echo Scanner
-	runtest 'ab' '1'
-	runtest 'a(a|b)*' '2'
-	runtest 'a[a-c]+' '3'
+	# *
+	runtest '2' 'a*c*' 'a' 'c' 'ac' 'ca' 'aacc'
+	
+	# +
+	runtest '3' 'a+c+' 'a' 'c' 'ac' 'ca' 'aacc'
+
+	# ?
+	runtest '4' 'a?c?' 'a' 'c' 'ac' 'ca' 'aacc'
+
+	# \
+	runtest '5' '\??\**\++' '+' '?+' '?*+' '??+' '**++' '?**++'
+
+	# |
+	runtest '6' 'a|b|c' 'a' 'b' 'c' 'ab' 'ad'
+
+	# [ - ]
+	runtest '7' '[a-c]' 'a' 'b' 'c' 'ab' 'd'
 }
 
 printResults

@@ -55,8 +55,6 @@ std::string Regex::expand_range(std::string expression)
 			new_expr += c;
 	}
 
-	std::cout << new_expr << '\n';
-
 	return new_expr;
 }
 
