@@ -200,8 +200,17 @@ std::shared_ptr<Node> Regex::parse(std::vector<Regex::Token> tokens, std::shared
 			{
 				//cycle back to itself
 				current = current->prev;
-				current->edges[current->edges.size() - 1]->out = current;
-				
+
+				if (index > 0 && tokens[index - 1].op == Regex::EXPRESSION)
+				{
+					std::shared_ptr<Node> temp(current);
+					while (temp->edges[0]->out != current->next)
+						temp = temp->edges[0]->out;
+					temp->edges[0]->out = current;
+				}
+				else
+					current->edges[current->edges.size() - 1]->out = current;
+
 				std::shared_ptr<Node> out(new Node());
 				std::shared_ptr<Edge> zero(new Edge());
 				zero->in = current;
@@ -218,11 +227,15 @@ std::shared_ptr<Node> Regex::parse(std::vector<Regex::Token> tokens, std::shared
 			//The *1 or more* aspect is done by previous concatenation done by default
 			case Regex::PLUS:
 			{
-				std::shared_ptr<Edge> trans(new Edge());
-				trans->c = current->prev->edges[current->prev->edges.size() - 1]->c;
-				trans->in = current, trans->out = current;
-
-				current->edges.push_back(trans);
+				if (tokens[index - 1].op != Regex::EXPRESSION)
+				{
+					std::shared_ptr<Edge> trans(new Edge());
+	
+					trans->c = current->prev->edges[current->prev->edges.size() - 1]->c;
+					trans->in = current, trans->out = current, current->next = current;
+				
+					current->edges.push_back(trans);
+				}
 			}
 				break;
 			//functions the same as OR but constructs new empty transition
@@ -243,9 +256,24 @@ std::shared_ptr<Node> Regex::parse(std::vector<Regex::Token> tokens, std::shared
 			{
 				std::shared_ptr<Node> expr_start(current);
 				current = parse(token.expression, current, true);			
-				
+
 				current->prev = expr_start;
 				current->prev->next = current;
+
+				if (index + 1 < tokens.size() - 1 && tokens[index + 1].op == Regex::PLUS)
+				{
+					std::shared_ptr<Node> extra(current);
+					current = parse(token.expression, current, true);
+						
+					current->prev = extra;
+					current->prev->next = current;
+
+					std::shared_ptr<Node> temp(extra);
+					while (temp->edges[0]->out != current)
+						temp = temp->edges[0]->out;
+					temp->edges[0]->out = extra;
+
+				}
 			}
 				break;
 			default:

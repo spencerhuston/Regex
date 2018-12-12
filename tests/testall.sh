@@ -53,6 +53,20 @@ function printResults {
 
 	# [ - ]
 	runtest '7' '[a-c]' 'a' 'b' 'c' 'ab' 'd'
+	
+	echo Grouping tests
+	echo --------------------------
+	# group concat
+	runtest '8' '(a)b' 'a' 'b' 'ab' 'ba' 'c'
+
+	# group *
+	runtest '9' '(ab)*' 'ab' 'abab' 'aba' 'c' 'a'
+
+	# group +
+	# not working yet
+
+	# group ?
+	runtest '11' '(ab)?' 'ab' 'abab' 'a' 'b' 'c'
 }
 
 printResults
