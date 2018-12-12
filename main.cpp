@@ -36,8 +36,8 @@ int main(int argc, char ** argv)
 		regex.set_tokens(regex.scan(expr));
 	
 		//Get end state from parser	
-		Node * start = new Node();	
-		Node * last = regex.parse(regex.get_tokens(), start, false);
+		std::shared_ptr<Node> start(new Node());	
+		std::shared_ptr<Node> last(regex.parse(regex.get_tokens(), start, false));
 		
 		//run each string in argument list
 		for (int i = 2; i < argc; i++)

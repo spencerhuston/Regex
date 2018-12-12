@@ -2,6 +2,7 @@
 #define NODE_H
 
 #include <vector>
+#include <memory>
 
 #include "Edge.h"
 
@@ -17,10 +18,11 @@ class Node
 		bool last;
 
 		//list of edges to next possible states
-		std::vector<Edge *> edges;
+		std::vector< std::shared_ptr<Edge> > edges;
 
 		//previous and next states
-		Node * prev, * next;
+		std::shared_ptr<Node> prev;
+	        std::shared_ptr<Node> next;
 };
 
 #endif

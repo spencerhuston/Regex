@@ -151,9 +151,9 @@ std::vector<Regex::Token> Regex::scan(std::string expression)
 //
 //	return: Node *, returns the end-state of the current expression (also used for sub-expressions)
 //
-Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
+std::shared_ptr<Node> Regex::parse(std::vector<Regex::Token> tokens, std::shared_ptr<Node> start, bool is_sub)
 {
-	Node * current = start;
+	std::shared_ptr<Node> current = start;
 
 	int index = 0;
 
@@ -164,7 +164,7 @@ Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 			//constructs new transition edge and new state and connects the two
 			case Regex::CHARACTER:
 			{
-				Edge * trans = new Edge();
+				std::shared_ptr<Edge> trans(new Edge());
 				trans->c = token.c;
 				trans->in = current;
 				trans->in->edges.push_back(trans);
@@ -185,7 +185,7 @@ Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 				}
 				else
 				{
-					Node * out = new Node();
+					std::shared_ptr<Node> out(new Node());
 					out->state = (current->state)++;
 					trans->out = out;
 					current->next = out;
@@ -203,8 +203,8 @@ Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 				current = current->prev;
 				current->edges[current->edges.size() - 1]->out = current;
 				
-				Node * out = new Node();
-				Edge * zero = new Edge();
+				std::shared_ptr<Node> out(new Node());
+				std::shared_ptr<Edge> zero(new Edge());
 				zero->in = current;
 				zero->out = out;
 				zero->sigma = true;
@@ -219,7 +219,7 @@ Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 			//The *1 or more* aspect is done by previous concatenation done by default
 			case Regex::PLUS:
 			{
-				Edge * trans = new Edge();
+				std::shared_ptr<Edge> trans(new Edge());
 				trans->c = current->prev->edges[current->prev->edges.size() - 1]->c;
 				trans->in = current, trans->out = current;
 
@@ -229,7 +229,7 @@ Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 			//functions the same as OR but constructs new empty transition
 			case Regex::QUESTION:
 			{
-				Edge * zero = new Edge();
+				std::shared_ptr<Edge> zero(new Edge());
 				zero->sigma = true, zero->out = current, zero->in = current->prev;
 				current->prev->edges.push_back(zero);		
 			}
@@ -242,7 +242,7 @@ Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 			//still working on
 			case Regex::EXPRESSION:
 			{
-				Node * expr_start = current;
+				std::shared_ptr<Node> expr_start(current);
 				current = parse(token.expression, current, true);			
 				
 				current->prev = expr_start;
@@ -270,7 +270,7 @@ Node * Regex::parse(std::vector<Regex::Token> tokens, Node * start, bool is_sub)
 //
 //	return: none, void
 //	
-void Regex::run(Node * start, std::string str)
+void Regex::run(std::shared_ptr<Node> start, std::string str)
 {
 	int i = 0;
 

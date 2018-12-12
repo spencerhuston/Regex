@@ -2,12 +2,14 @@
 #define REGEX_H
 
 #include <ctype.h>
+#include <cstdint>
 
 #include <string>
 #include <vector>
-#include <algorithm>
 
 #include <iostream>
+
+#include <memory>
 
 #include "Edge.h"
 #include "Node.h"
@@ -48,8 +50,8 @@ class Regex
 	public:
 		std::string expand_range(std::string expression);
 		std::vector<Token> scan(std::string expression);
-		Node * parse(std::vector<Token> tokens, Node * start, bool is_sub);
-		void run(Node * start, std::string str);
+		std::shared_ptr<Node> parse(std::vector<Token> tokens, std::shared_ptr<Node> start, bool is_sub);
+		void run(std::shared_ptr<Node> start, std::string str);
 
 		//helper methods
 		void print_scan(std::vector<Token> tokens);

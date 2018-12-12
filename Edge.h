@@ -1,6 +1,8 @@
 #ifndef EDGE_H
 #define EDGE_H
 
+#include <memory>
+
 #include "Node.h"
 
 class Node;
@@ -15,8 +17,8 @@ class Edge
 		bool sigma;
 
 		//states at beginning and end of transition
-		Node * in;
-		Node * out;
+		std::shared_ptr<Node> in;
+		std::shared_ptr<Node> out;
 };
 
 #endif
