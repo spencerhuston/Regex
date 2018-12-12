@@ -9,3 +9,9 @@ Support
 
     Characters: *, +, ?, |, [ - ], \, ( ) with nesting, and concatenation
     Other: variadic argument list, -h or --help to display usage/characters
+
+Resources:
+    
+- https://swtch.com/~rsc/regexp/regexp1.html
+  
+- https://medium.com/@DmitrySoshnikov/building-a-regexp-machine-part-1-regular-grammars-d4986b585d7e
