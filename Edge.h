@@ -2,6 +2,7 @@
 #define EDGE_H
 
 #include <memory>
+#include <cstdint>
 
 #include "Node.h"
 
@@ -11,7 +12,7 @@ class Edge
 {
 	public:
 		//character for transition
-		char c;
+		uint8_t c;
 		
 		//transition is empty
 		bool sigma;

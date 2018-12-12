@@ -34,7 +34,7 @@ class Regex
 			Ops op;
 			
 			//character that generated the token
-			char c;
+			uint8_t c;
 			
 			//used to convert from raw ascii since all characters are stored as char
 			bool number;

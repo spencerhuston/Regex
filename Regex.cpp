@@ -11,12 +11,12 @@ std::string Regex::expand_range(std::string expression)
 	std::string new_expr;
 
 	//stores what's inside the square brackets
-	std::vector<char> local;
+	std::vector<uint8_t> local;
 	bool in_bracket = false;
 
 	for (int i = 0; i < expression.length(); i++)
 	{
-		char c = expression[i];
+		uint8_t c = expression[i];
 
 		if (c == '[')
 		{
@@ -54,11 +54,11 @@ std::string Regex::expand_range(std::string expression)
 		else if (c == '-' && in_bracket && (i >= 2 || expression.length() - i >= 2))
 		{
 			//gets range of characters in [x-z] and stores them in vector for use when ] is hit	
-			char left = expression[i - 1];
-			char right = expression[i + 1];
+			uint8_t left = expression[i - 1];
+			uint8_t right = expression[i + 1];
 					
 			for (int j = (int)left; j <= (int)right; j++)
-				local.push_back((char)j);	
+				local.push_back((uint8_t)j);	
 		}
 		else if (!in_bracket)
 			new_expr += c;
@@ -83,7 +83,7 @@ std::vector<Regex::Token> Regex::scan(std::string expression)
 	{
 		Token t;
 
-		char c = expression[i]; 
+		uint8_t c = expression[i]; 
 
 		//skips over because it is handled when ( is hit	
 		if (c == ')')
@@ -186,7 +186,6 @@ std::shared_ptr<Node> Regex::parse(std::vector<Regex::Token> tokens, std::shared
 				else
 				{
 					std::shared_ptr<Node> out(new Node());
-					out->state = (current->state)++;
 					trans->out = out;
 					current->next = out;
 					current = out;
