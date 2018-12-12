@@ -11,7 +11,15 @@ function runtest {
 	if [ $# == 8 ]; then
 		empty=$8
 	fi
-	../regex.exe $2 $3 $4 $5 $6 $7 "$empty"> r$1.out
+
+	executable=''
+	if [[ "$OSTYPE" == "linux-gnu" ]]; then
+		executable="regex"
+	elif [[ "$OSTYPE" == "cygwin" ]]; then
+		executable="regex.exe"
+	fi
+
+	../$executable $2 $3 $4 $5 $6 $7 "$empty"> r$1.out
 	diff r$1.out r$1.org > diff.out
 	if [ $? -eq 0 ]; then
 		echo Test $1 passed...;
