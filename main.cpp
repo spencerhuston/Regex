@@ -2,6 +2,7 @@
 #include <string>
 
 #include "Regex.h"
+#include "Format.h"
 
 int main(int argc, char ** argv)
 {
@@ -26,18 +27,15 @@ int main(int argc, char ** argv)
 	{
 		Regex regex;
 		std::string expr = argv[1];
-		//std::string str = argv[i];
 				
-		expr = regex.expand_range(expr);
-		if (expr.empty())
-			return 1;
-		
+		Format format(expr);
+		expr = format.get_expression();
+
 		//get token list from scanner	
 		regex.set_tokens(regex.scan(expr));
-	
-		//Get end state from parser	
-		std::shared_ptr<Node> start(new Node());	
-		std::shared_ptr<Node> last(regex.parse(regex.get_tokens(), start, false));
+		regex.print_scan(regex.get_tokens());	
+
+		std::shared_ptr<Node> start(regex.parse(regex.get_tokens()));
 		
 		//run each string in argument list
 		for (int i = 2; i < argc; i++)

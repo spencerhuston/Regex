@@ -6,6 +6,7 @@
 
 #include <string>
 #include <vector>
+#include <stack>
 
 #include <iostream>
 
@@ -25,7 +26,7 @@ class Regex
 		// 5 concatenation: ab = a then b
 		// 6 another expression
 		enum Ops { STAR, PLUS, QUESTION, 
-			   OR, CHARACTER, EXPRESSION };
+			   OR, CHARACTER, CAT };
 
 		//Constructed during scanning, used during parsing to make NFA
 		struct Token
@@ -48,9 +49,8 @@ class Regex
 		std::vector<Token> _tokens;
 
 	public:
-		std::string expand_range(std::string expression);
 		std::vector<Token> scan(std::string expression);
-		std::shared_ptr<Node> parse(std::vector<Token> tokens, std::shared_ptr<Node> start, bool is_sub);
+		std::shared_ptr<Node> parse(std::vector<Token> tokens);
 		void run(std::shared_ptr<Node> start, std::string str);
 
 		//helper methods
