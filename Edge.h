@@ -4,22 +4,37 @@
 #include <memory>
 #include <cstdint>
 
-#include "Node.h"
+#include "State.h"
 
-class Node;
+class State;
 
 class Edge
 {
 	public:
 		//character for transition
-		uint8_t c;
+		uint8_t _c;
 		
 		//transition is empty
-		bool sigma;
+		bool _sigma;
 
 		//states at beginning and end of transition
-		std::shared_ptr<Node> in;
-		std::shared_ptr<Node> out;
+		std::shared_ptr<State> _in;
+		std::shared_ptr<State> _out;
+
+		Edge(uint8_t c, bool sigma, std::shared_ptr<State> in, std::shared_ptr<State> out)
+		{
+			_c = c;
+			_sigma = sigma;
+			_in = in;
+			_out = out;
+		}
+
+		Edge(bool sigma, std::shared_ptr<State> in, std::shared_ptr<State> out)
+		{
+			_sigma = sigma;
+			_in = in;
+			_out = out;
+		}
 };
 
 #endif

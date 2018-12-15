@@ -55,27 +55,45 @@ std::vector<Regex::Token> Regex::scan(std::string expression)
 // roughly according to Thompson's construction algorithm
 //
 //	params: std::vector<Regex::Token> tokens, the token stream made during scanning
-//		Node * start, the starting state (used for recursive calls for sub-expressions)
-//		bool is_sub, indicates whether current expression is a sub-expression, makes sure end-state is not marked as a matching state
+//		Node * start, the starting state
 //
-//	return: Node *, returns the end-state of the current expression (also used for sub-expressions)
+//	return: none, void
 //
-std::shared_ptr<Node> Regex::parse(std::vector<Regex::Token> tokens)
+std::shared_ptr<State> Regex::parse(std::vector<Regex::Token> tokens)
 {
-	std::shared_ptr<Node> start;
+	std::stack< std::shared_ptr<Fragment> > nfa; 
 
-	for (auto const & token: tokens)
+	for (auto const & token : tokens)
 	{
 		switch (token.op)
 		{
 			case Regex::CHARACTER:
-			{
+			{		
+				std::shared_ptr<State> in(new State());
+				std::shared_ptr<Edge> e(new Edge(token.c, false, in, NULL));
 
+				in->_edges.push_back(e);
+
+				std::shared_ptr<Fragment> f(new Fragment(in));
+				f->_edges = &in->_edges;
+
+				nfa.push(f);
 			}
 				break;
 			case Regex::CAT:
 			{
+				std::shared_ptr<Fragment> f2(nfa.top());
+				nfa.pop();
+				std::shared_ptr<Fragment> f1(nfa.top());
+				nfa.pop();
+			
+				for (auto const & e : *(f1->_edges))
+					e->_out = f2->_start;
+				
+				std::shared_ptr<Fragment> f(new Fragment(f1->_start));
+				f->_edges = f2->_edges;
 
+				nfa.push(f);
 			}
 				break;
 			case Regex::STAR:
@@ -95,7 +113,29 @@ std::shared_ptr<Node> Regex::parse(std::vector<Regex::Token> tokens)
 				break;
 			case Regex::OR:
 			{
+				std::shared_ptr<Fragment> f2(nfa.top());
+				nfa.pop();
+				std::shared_ptr<Fragment> f1(nfa.top());
+				nfa.pop();
 
+				std::shared_ptr<State> s(new State());
+				std::shared_ptr<Edge> e1(new Edge(true, s, f1->_start));
+				std::shared_ptr<Edge> e2(new Edge(true, s, f2->_start));
+				
+				s->_edges.push_back(e1), s->_edges.push_back(e2);
+
+				std::shared_ptr<Fragment> f(new Fragment(s));
+				
+				std::shared_ptr<State> s2(new State());
+
+				for (auto const & e : *(f1->_edges))
+					e->_out = s2;
+	
+				for (auto const & e : *(f2->_edges))
+					e->_out = s2;				
+				
+				f->_edges = &s2->_edges;
+				nfa.push(f);
 			}
 				break;
 			default:
@@ -103,8 +143,17 @@ std::shared_ptr<Node> Regex::parse(std::vector<Regex::Token> tokens)
 				return NULL;
 		}
 	}
-	
-	return start;
+
+	std::shared_ptr<Fragment> end(nfa.top());
+	nfa.pop();
+
+	std::shared_ptr<State> last(new State());
+	last->_match = true;
+
+	for (auto const & e : *(end->_edges))
+		e->_out = last;
+
+	return end->_start;
 }
 
 // Simulates the NFA with a given string to match
@@ -114,43 +163,42 @@ std::shared_ptr<Node> Regex::parse(std::vector<Regex::Token> tokens)
 //
 //	return: none, void
 //	
-void Regex::run(std::shared_ptr<Node> start, std::string str)
+void Regex::run(std::shared_ptr<State> start, std::string str)
 {
-	int i = 0;
-
-	while (start)
+	for (int i = 0; i < str.length(); i++)
 	{
-		//matched if no more of input string to read
-		//and the current state is a match
-		if (i == str.length() && start->last)
-		{
-			std::cout << "Match\n";
-			return;
-		}
+		uint8_t c = str[i];
 
-		//checks all edges against current character in input string
-		bool match = false;
-		for (auto const & edge: start->edges)
+		bool found = false;		
+		
+		for (auto const & e : start->_edges)
 		{
-			if (edge->c == str[i] || edge->sigma)
+			if (e->_c == c || (e->_c != c && e->_sigma))
 			{
-				match = true;
-				start = edge->out;
-				
-				//if empty transition don't advance in the input string
-				if (!(edge->sigma)) i++;
-
-				break;	
-			}
+				start = e->_out;
+				found = true;
+				if (e->_sigma) i--;
+				break;
+			}	
 		}
 
-		if (!match)
+		if (!found)
 		{
 			std::cout << "No match\n";
 			return;
 		}
-	}	
-	std::cout << "Match\n";
+	}
+
+	if (start->_edges.size() == 0 && start->_match)
+	{
+		std::cout << "Match\n";
+		return;
+	}
+	else
+	{
+		std::cout << "No match\n";
+		return;
+	}
 }
 
 //used for testing purposes for scanning phase
@@ -169,4 +217,19 @@ void Regex::print_scan(std::vector<Regex::Token> tokens)
 		else
 			std::cout << tokens[i].op << ' ';
 	}
+}
+
+void Regex::print_nfa(std::shared_ptr<State> start)
+{
+	int state = 0;
+	while (start->_edges.size() && !start->_match)
+	{
+		std::cout << state++;
+		for (auto const & e : start->_edges)
+		{
+			std::cout << "-" << e->_c << "->";
+		}
+		start = start->_edges[0]->_out;
+	}
+	std::cout << '\n';
 }

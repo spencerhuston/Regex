@@ -31,16 +31,21 @@ int main(int argc, char ** argv)
 		Format format(expr);
 		expr = format.get_expression();
 
+		std::cout << expr << '\n';	
 		//get token list from scanner	
 		regex.set_tokens(regex.scan(expr));
-		regex.print_scan(regex.get_tokens());	
 
-		std::shared_ptr<Node> start(regex.parse(regex.get_tokens()));
-		
-		//run each string in argument list
+		std::shared_ptr<State> start;
+		start = regex.parse(regex.get_tokens());
+
+		if (start == NULL)
+		{
+			std::cout << "NFA construction error\n";
+			return 1;
+		}
+
 		for (int i = 2; i < argc; i++)
 			regex.run(start, std::string(argv[i]));
-		
 	}
 
 	return 0;

@@ -27,7 +27,7 @@ class Format
 		inline uint8_t get_precedence(uint8_t c)
 		{ return (precedence.find(c) == precedence.end()) ? 6 : precedence.find(c)->second; }
 
-		inline std::string get_expression()
+		inline const std::string get_expression()
 		{ return _expression; }
 };
 

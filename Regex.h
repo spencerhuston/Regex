@@ -13,7 +13,8 @@
 #include <memory>
 
 #include "Edge.h"
-#include "Node.h"
+#include "State.h"
+#include "Fragment.h"
 
 class Regex
 {
@@ -50,11 +51,12 @@ class Regex
 
 	public:
 		std::vector<Token> scan(std::string expression);
-		std::shared_ptr<Node> parse(std::vector<Token> tokens);
-		void run(std::shared_ptr<Node> start, std::string str);
+		std::shared_ptr<State> parse(std::vector<Token> tokens);
+		void run(std::shared_ptr<State> start, std::string str);
 
 		//helper methods
 		void print_scan(std::vector<Token> tokens);
+		void print_nfa(std::shared_ptr<State> start);
 
 		inline void set_tokens(std::vector<Token> tokens)
 		{ _tokens = tokens; }
