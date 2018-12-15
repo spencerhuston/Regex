@@ -87,13 +87,19 @@ std::shared_ptr<State> Regex::parse(std::vector<Regex::Token> tokens)
 				nfa.pop();
 				std::shared_ptr<Fragment> f1(nfa.top());
 				nfa.pop();
-			
-				for (auto const & e : *(f1->_edges))
-					e->_out = f2->_start;
+		
+				if (f1->_edges->size() == 0)
+				{
+					std::shared_ptr<Edge> e(new Edge(true, f1->_end, f2->_start));
+					f1->_edges->push_back(e);
+				}
+				else
+					for (auto const & e : *(f1->_edges))
+						e->_out = f2->_start;
 				
 				std::shared_ptr<Fragment> f(new Fragment(f1->_start));
 				f->_edges = f2->_edges;
-				f->_end = NULL;
+				f->_end = (f2->_end == NULL) ? NULL : f2->_end;
 
 				nfa.push(f);
 			}
