@@ -15,7 +15,7 @@ class Edge
 		uint8_t _c;
 		
 		//transition is empty
-		bool _sigma;
+		bool _sigma, _modifiable;
 
 		//states at beginning and end of transition
 		std::shared_ptr<State> _in;

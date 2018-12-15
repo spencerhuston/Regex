@@ -65,7 +65,7 @@ function printResults {
 #	echo Grouping tests
 #	echo --------------------------
 	# group concat
-#	runtest '8' '(a)b' 'a' 'b' 'ab' 'ba' 'c'
+	runtest '8' '(a)b' 'a' 'b' 'ab' 'ba' 'c'
 
 	# group *
 #	runtest '9' '(ab)*' 'ab' 'abab' 'aba' 'c' 'a'
@@ -74,7 +74,7 @@ function printResults {
 	# not working yet
 
 	# group ?
-#	runtest '11' '(ab)?' 'ab' 'abab' 'a' 'b' 'c'
+	runtest '11' '(ab)?' 'ab' 'abab' 'a' 'b' 'c'
 }
 
 printResults

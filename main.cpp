@@ -31,7 +31,6 @@ int main(int argc, char ** argv)
 		Format format(expr);
 		expr = format.get_expression();
 
-		std::cout << expr << '\n';	
 		//get token list from scanner	
 		regex.set_tokens(regex.scan(expr));
 
