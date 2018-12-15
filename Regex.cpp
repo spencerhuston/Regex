@@ -116,7 +116,39 @@ std::shared_ptr<State> Regex::parse(std::vector<Regex::Token> tokens)
 				break;
 			case Regex::QUESTION:
 			{
+				std::shared_ptr<Fragment> f1(nfa.top());
+				nfa.pop();
+				
+				std::shared_ptr<State> f2_start(new State());
+				std::shared_ptr<Fragment> f2(new Fragment(f2_start));
+				
+				std::shared_ptr<State> s(new State());
+				std::shared_ptr<Edge> e1(new Edge(true, s, f1->_start));
+				std::shared_ptr<Edge> e2(new Edge(true, s, f2->_start));
+				
+				s->_edges.push_back(e1), s->_edges.push_back(e2);
 
+				std::shared_ptr<Fragment> f(new Fragment(s));
+				
+				std::shared_ptr<State> s2(new State());
+					
+				if (f1->_edges->size() == 0)
+				{
+					std::shared_ptr<Edge> f1_e(new Edge(true, f1->_end, s2));	
+					f1->_edges->push_back(f1_e);
+				}
+				else
+					for (auto const & e : *(f1->_edges))
+						e->_out = s2;
+			
+				std::shared_ptr<Edge> f2_e(new Edge(true, f2_start, s2));	
+				f2_start->_edges.push_back(f2_e);
+				f2->_edges = &f2_start->_edges;
+
+				f->_end = s2;
+				f->_edges = &s2->_edges;
+
+				nfa.push(f);
 			}
 				break;
 			case Regex::OR:
@@ -156,6 +188,7 @@ std::shared_ptr<State> Regex::parse(std::vector<Regex::Token> tokens)
 					
 				f->_end = s2;
 				f->_edges = &s2->_edges;
+				
 				nfa.push(f);
 			}
 				break;

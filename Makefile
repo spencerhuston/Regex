@@ -13,4 +13,4 @@ Format.o: Format.h Format.cpp
 	$(COMP) $(CFLAG) Format.cpp
 
 clean:
-	rm -rf regex *.o
+	rm -rf regex *.o *.gch
