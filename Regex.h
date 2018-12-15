@@ -55,6 +55,8 @@ class Regex
 		void run(std::shared_ptr<State> start, std::string str);
 
 		//helper methods
+		void add_states(std::vector< std::shared_ptr<State> > & nstates, std::shared_ptr<Edge> e);
+		bool contains(const std::vector<uint8_t> matched, const uint8_t c);
 		void print_scan(std::vector<Token> tokens);
 		void print_nfa(std::shared_ptr<State> start);
 

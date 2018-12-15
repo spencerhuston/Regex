@@ -7,8 +7,9 @@ class Fragment
 {
 	public:
 		std::shared_ptr<State> _start;
+		std::shared_ptr<State> _end;
 		std::vector< std::shared_ptr<Edge> > * _edges;
-
+		
 		inline Fragment(std::shared_ptr<State> start)
 		{ _start = start; }
 };
