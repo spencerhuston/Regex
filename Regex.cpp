@@ -217,12 +217,14 @@ std::shared_ptr<State> Regex::parse(std::vector<Regex::Token> tokens)
 
 void Regex::add_states(std::vector< std::shared_ptr<State> > & nstates, std::shared_ptr<Edge> e)
 {
-	if (e->_out->_edges.size() == 0)
+	if (contains(nstates, e->_out))
+		return;
+	else if (e->_out->_edges.size() == 0)
 	{
 		nstates.push_back(e->_out);
 		return;
 	}
-
+	
 	for (auto const & e2 : e->_out->_edges)
 	{
 		if (e2->_sigma)	
@@ -230,14 +232,6 @@ void Regex::add_states(std::vector< std::shared_ptr<State> > & nstates, std::sha
 		else
 			nstates.push_back(e2->_in);
 	}
-}
-
-bool Regex::contains(const std::vector<uint8_t> matched, const uint8_t c)
-{
-	for (auto const & m : matched)
-		if (m == c)
-			return true;
-	return false;
 }
 
 // Simulates the NFA with a given string to match
@@ -292,13 +286,15 @@ void Regex::run(std::shared_ptr<State> start, std::string str)
 			matched.clear();
 		}
 	}
-		
+	
+	std::vector< std::shared_ptr<State> > checks(cstates);
+
 	for (auto const & s : cstates)
 		for (auto const & e : s->_edges)
 			if (e->_sigma)
-				add_states(cstates, e);
+				add_states(checks, e);
 
-	for (auto const & s : cstates)
+	for (auto const & s : checks)
 		if (s->_match)
 		{
 			std::cout << "Match\n";

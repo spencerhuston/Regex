@@ -56,7 +56,23 @@ class Regex
 
 		//helper methods
 		void add_states(std::vector< std::shared_ptr<State> > & nstates, std::shared_ptr<Edge> e);
-		bool contains(const std::vector<uint8_t> matched, const uint8_t c);
+		
+		bool contains(const std::vector<uint8_t> matched, const uint8_t c)
+		{
+			for (auto const & m : matched)
+				if (m == c)
+					return true;
+			return false;
+		}
+
+		bool contains(const std::vector< std::shared_ptr<State> > states, std::shared_ptr<State> s)
+		{
+			for (auto const & st : states)
+				if (st == s)
+					return true;
+			return false;
+		}
+
 		void print_scan(std::vector<Token> tokens);
 		void print_nfa(std::shared_ptr<State> start);
 
