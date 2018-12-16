@@ -68,6 +68,21 @@ std::string Format::expand_range(std::string expression)
                         for (int j = (int)left; j <= (int)right; j++)
                                 local.push_back((uint8_t)j);
                 }
+		else if (c == '\\' && i + 1 < expression.length() && expression[i + 1] == 'd')
+		{
+			new_expr += '(';
+
+			for (int j = 48; j < 57; j++)
+			{
+				new_expr += (uint8_t)j;
+				new_expr += '|';
+			}
+			
+			new_expr += (uint8_t)57;
+			new_expr += ')';
+			
+			i++;
+		}
                 else if (!in_bracket)
                         new_expr += c;
         }

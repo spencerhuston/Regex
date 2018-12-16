@@ -27,13 +27,15 @@ int main(int argc, char ** argv)
 	{
 		Regex regex;
 		std::string expr = argv[1];
-				
+		
+		//change to postfix expression		
 		Format format(expr);
 		expr = format.get_expression();
 
 		//get token list from scanner	
 		regex.set_tokens(regex.scan(expr));
 
+		//parse and get start of fragment(starting state)
 		std::shared_ptr<State> start;
 		start = regex.parse(regex.get_tokens());
 

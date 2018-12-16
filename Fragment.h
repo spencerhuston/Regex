@@ -6,8 +6,11 @@
 class Fragment
 {
 	public:
+		//Fragment start and end states
 		std::shared_ptr<State> _start;
 		std::shared_ptr<State> _end;
+
+		//edges from the end of the fragment
 		std::vector< std::shared_ptr<Edge> > * _edges;
 		
 		inline Fragment() {}

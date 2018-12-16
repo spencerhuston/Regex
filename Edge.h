@@ -14,7 +14,7 @@ class Edge
 		//character for transition
 		uint8_t _c;
 		
-		//transition is empty
+		//transition is empty, transition's _out can be changed
 		bool _sigma, _modifiable;
 
 		//states at beginning and end of transition
@@ -29,6 +29,7 @@ class Edge
 			_out = out;
 		}
 
+		//constructor for empty edge (sigma)
 		Edge(bool sigma, std::shared_ptr<State> in, std::shared_ptr<State> out)
 		{
 			_sigma = sigma;
