@@ -39,41 +39,43 @@ function runtest {
 
 function printResults {
 
-	echo Individual character tests
-	echo --------------------------	
-	# concatenation
+	echo "Individual character tests"
+	echo "--------------------------"
+	
+	echo "concatenation"
 	runtest '1' 'ab' 'a' 'b' 'ab' 'ba' 'c'
 	
-	# *
+	echo "*"
 	runtest '2' 'a*c*' 'a' 'c' 'ac' 'ca' 'aacc'
 	
-	# +
+	echo "+"
 	runtest '3' 'a+c+' 'a' 'c' 'ac' 'ca' 'aacc'
 
-	# ?
+	echo "?"
 	runtest '4' 'a?c?' 'a' 'c' 'ac' 'ca' 'aacc'
 
-	# \
+	echo "\\"
 	runtest '5' '\??\**\++' '+' '?+' '?*+' '??+' '**++' '?**++'
 
-	# |
+	echo "|"
 	runtest '6' 'a|b|c' 'a' 'b' 'c' 'ab' 'ad'
 
-	# [ - ]
+	echo "[ - ]"
 	runtest '7' '[a-c]' 'a' 'b' 'c' 'ab' 'd'
 	
-#	echo Grouping tests
-#	echo --------------------------
-	# group concat
+	echo "Grouping tests"
+	echo "--------------------------"
+	
+	echo "group concat"
 	runtest '8' '(a)b' 'a' 'b' 'ab' 'ba' 'c'
 
-	# group *
-#	runtest '9' '(ab)*' 'ab' 'abab' 'aba' 'c' 'a'
+	echo "group *"
+	runtest '9' '(ab)*' 'ab' 'abab' 'aba' 'c' 'a'
 
-	# group +
-	# not working yet
+	echo "group +"
+	runtest '10' '(ab)+' 'ab' 'abab' 'aba' 'c' 'a'
 
-	# group ?
+	echo "group ?"
 	runtest '11' '(ab)?' 'ab' 'abab' 'a' 'b' 'c'
 }
 
