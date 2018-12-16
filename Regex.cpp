@@ -337,6 +337,8 @@ void Regex::add_states(std::vector< std::shared_ptr<State> > & nstates, std::sha
 	}
 }
 
+
+
 // Simulates the NFA with a given string to match
 //	
 //	params: Node * start, the starting state of the NFA
@@ -370,8 +372,8 @@ void Regex::run(std::shared_ptr<State> start, std::string str)
 					if (!contains(matched, c))
 						matched.push_back(c), i++;
 				}
-				else if (e->_sigma)
-				{
+				else if (e->_sigma && matched.size() == 0)
+				{ 
 					add_states(nstates, e);
 					found = true;
 				}
