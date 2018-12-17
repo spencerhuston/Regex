@@ -33,8 +33,13 @@ int main(int argc, char ** argv)
 		Format format(expr);
 		expr = format.get_expression();
 
+		std::cout << expr << '\n';
+
 		//get token list from scanner	
 		regex.set_tokens(regex.scan(expr));
+		
+		Analyzer analyzer(regex.get_tokens());
+		regex.set_tokens(analyzer.get_tokens());
 
 		//parse and get start of fragment(starting state)
 		std::shared_ptr<State> start;
