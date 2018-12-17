@@ -116,7 +116,7 @@ void Analyzer::preorder(std::shared_ptr<Analyzer::Node> node)
 	if (node == NULL)
 		return;
 	
-	if (node->_prec == 1)
+	if (node->_prec == 1 && node->_c != '?')
 	{
 		check_prec(node->_left);
 		check_prec(node->_right);
