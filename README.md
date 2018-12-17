@@ -24,7 +24,7 @@ Support:
 
         - To be added:
 
-            - Ranged repetition: _a{x,y}_ for repeating 'a' at least x times up to y times
+            - Ranged repetition: a{x,y} for repeating 'a' at least x times up to y times
         
             - \a: any character
     
@@ -36,9 +36,9 @@ Support:
 
 Precedence:
 
-    _+_, then _*_ and _?_, then _._ (concatenation), then any regular character
+    +, then * and ?, then . (concatenation), then any regular character
     
-    NOTE: _+_ overrides the 'zero or...' in _*_ and _?_ so _(a?)+_ or _(a*)+_ fail to match on an empty string
+    NOTE: + overrides the 'zero or...' in * and ? so (a?)+ or (a*)+ fail to match on an empty string
 
 Resources:
 
