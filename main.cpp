@@ -2,6 +2,7 @@
 #include <string>
 
 #include "Regex.h"
+#include "Analyzer.h"
 #include "Format.h"
 
 int main(int argc, char ** argv)

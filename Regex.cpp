@@ -359,21 +359,25 @@ std::shared_ptr<State> Regex::parse(std::vector<Regex::Token> tokens)
 //
 //	return: none
 //
-void Regex::add_states(std::vector< std::shared_ptr<State> > & nstates, std::shared_ptr<Edge> e)
+void Regex::add_states(std::vector< std::shared_ptr<State> > & nstates, std::shared_ptr<Edge> e, std::vector< std::shared_ptr<State> > & visited)
 {
 	//matching state hit
-	if (e->_out->_edges.size() == 0)
+	if (e->_out->_edges.size() == 0 && !contains(visited, e->_out))
 	{
 		nstates.push_back(e->_out);
+		visited.push_back(e->_out);
 		return;
 	}
 	
 	for (auto const & e2 : e->_out->_edges)
 	{
 		if (e2->_sigma)	
-			add_states(nstates, e2);
-		else //next possible state found
+			add_states(nstates, e2, visited);
+		else if (!contains(visited, e2->_in))
+		{
 			nstates.push_back(e2->_in);
+			visited.push_back(e2->_in);
+		}
 	}
 }
 
@@ -391,6 +395,7 @@ void Regex::run(std::shared_ptr<State> start, std::string str)
 	//current possible states and next possible states
 	std::vector< std::shared_ptr<State> > cstates;
 	std::vector< std::shared_ptr<State> > nstates;
+	std::vector< std::shared_ptr<State> > visited;
 
 	//characters already matched by other edges leading to next possible states
 	std::vector<uint8_t> matched;
@@ -421,8 +426,8 @@ void Regex::run(std::shared_ptr<State> start, std::string str)
 				//if an empty edge and nothing already matched,
 				// add next possible states given no match
 				else if (e->_sigma && matched.size() == 0)
-				{ 
-					add_states(nstates, e);
+				{
+					add_states(nstates, e, visited);
 					found = true;
 				}
 			}
@@ -437,6 +442,7 @@ void Regex::run(std::shared_ptr<State> start, std::string str)
 		{
 			cstates = nstates;
 			nstates.clear();
+			visited.clear();
 			matched.clear();
 		}
 	}
@@ -448,7 +454,7 @@ void Regex::run(std::shared_ptr<State> start, std::string str)
 		for (auto const & e : s->_edges)
 		{	
 			if (e->_sigma)
-				add_states(checks, e);
+				add_states(checks, e, visited);
 		}
 
 	//check if match is found

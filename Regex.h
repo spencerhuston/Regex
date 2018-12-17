@@ -19,13 +19,8 @@
 class Regex
 {
 	private:
-		// 0 *
-		// 1 +
-		// 2 ?
-		// 3 |
-		// 4 [a-zA-Z0-9]
-		// 5 concatenation: ab = a then b
-		// 6 another expression
+		friend class Analyzer;
+	
 		enum Ops { STAR, PLUS, QUESTION, 
 			   OR, CHARACTER, CAT };
 
@@ -66,13 +61,21 @@ class Regex
 		void change_edges(std::shared_ptr<Fragment> & f1, std::shared_ptr<Fragment> & f2);
 		void change_edges(std::shared_ptr<Fragment> & f2, std::shared_ptr<State> & s2);
 		void change_edges(Fragment & f1, Fragment & f2);
-		void add_states(std::vector< std::shared_ptr<State> > & nstates, std::shared_ptr<Edge> e);
+		void add_states(std::vector< std::shared_ptr<State> > & nstates, std::shared_ptr<Edge> e, std::vector< std::shared_ptr<State> > & visited);
 		
 		//inlined
 		inline bool contains(const std::vector<uint8_t> matched, const uint8_t c)
 		{
 			for (auto const & m : matched)
 				if (m == c)
+					return true;
+			return false;
+		}
+
+		inline bool contains(const std::vector< std::shared_ptr<State> > nstates, const std::shared_ptr<State> s)
+		{
+			for (auto const & n : nstates)
+				if (n == s)
 					return true;
 			return false;
 		}

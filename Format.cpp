@@ -83,6 +83,37 @@ std::string Format::expand_range(std::string expression)
 			
 			i++;
 		}
+		else if (c == '\\' && i + 1 < expression.length() && expression[i + 1] == 'w')
+		{
+			new_expr += '(';
+
+			for (int j = 97; j < 122; j++)
+			{
+				new_expr += (uint8_t)j;
+				new_expr += '|';
+			}
+			
+			new_expr += (uint8_t)122;
+			new_expr += ')';
+			
+			i++;
+		}
+		else if (c == '\\' && i + 1 < expression.length() && expression[i + 1] == 'W')
+		{
+			new_expr += '(';
+
+			for (int j = 65; j < 90; j++)
+			{
+				new_expr += (uint8_t)j;
+				new_expr += '|';
+			}
+			
+			new_expr += (uint8_t)90;
+			new_expr += ')';
+			
+			i++;
+		}	
+                	
                 else if (!in_bracket)
                         new_expr += c;
         }
