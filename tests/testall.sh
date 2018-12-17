@@ -54,9 +54,6 @@ function printResults {
 	echo "?"
 	runtest '4' 'a?c?' 'a' 'c' 'ac' 'ca' 'aacc'
 
-	echo "\\"
-	runtest '5' '\??\**\++' '+' '?+' '?*+' '??+' '**++' '?**++'
-
 	echo "|"
 	runtest '6' 'a|b|c' 'a' 'b' 'c' 'ab' 'ad'
 

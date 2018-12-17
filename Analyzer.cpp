@@ -117,7 +117,10 @@ void Analyzer::preorder(std::shared_ptr<Analyzer::Node> node)
 		return;
 	
 	if (node->_prec == 1)
-		check_prec(node);
+	{
+		check_prec(node->_left);
+		check_prec(node->_right);
+	}
 	else
 	{
 		preorder(node->_left);
@@ -153,8 +156,5 @@ void Analyzer::analyze()
 	std::vector<Regex::Token> tokens;
 	remake_tokens(_root, tokens);
 
-	for (auto const & t : tokens)
-		std::cout << t.op << ' ';
-	std::cout << '\n';
 	_tokens = tokens;	
 }
