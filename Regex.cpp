@@ -184,21 +184,27 @@ void Regex::plus(std::stack< std::shared_ptr<Fragment> > & nfa)
 	f1._edges = e1;
 	f2._edges = &e2;
 	
-	State s1 = *(f1._start);	
+	State s1 = *(f1._start);
+	s1._match = false;	
 	State s2 = *(f1._start);
+	s2._match = false;
 	f1._start = std::make_shared<State>(s1);
 	f2._start = std::make_shared<State>(s2);
 
 	if (f1._end == NULL)
 	{
 		std::shared_ptr<State> en1(new State());
+		en1->_match = false;
 		std::shared_ptr<State> en2(new State());
+		en2->_match = false;
 		f1._end = en1, f2._end = en2;
 	}
 	else
 	{
 		State en1 = *(f1._end);
+		en1._match = false;
 		State en2 = *(f1._end);
+		en2._match = false;
 		f1._end = std::make_shared<State>(en1);
 		f2._end = std::make_shared<State>(en2);
 	}
@@ -230,6 +236,7 @@ void Regex::question(std::stack< std::shared_ptr<Fragment> > & nfa)
 	nfa.pop();
 	
 	std::shared_ptr<State> f2_start(new State());
+	f2_start->_match = false;
 	std::shared_ptr<Fragment> f2(new Fragment(f2_start));
 	
 	std::shared_ptr<State> s(new State());
@@ -243,7 +250,8 @@ void Regex::question(std::stack< std::shared_ptr<Fragment> > & nfa)
 	std::shared_ptr<Fragment> f(new Fragment(s));
 	
 	std::shared_ptr<State> s2(new State());
-	
+	s2->_match = false;
+
 	change_edges(f1, s2);
 
 	std::shared_ptr<Edge> f2_e(new Edge(true, f2_start, s2));	
@@ -270,6 +278,8 @@ void Regex::_or(std::stack< std::shared_ptr<Fragment> > & nfa)
 	nfa.pop();
 
 	std::shared_ptr<State> s(new State());
+	s->_match = false;
+
 	std::shared_ptr<Edge> e1(new Edge(true, s, f1->_start));
 	e1->_modifiable = true;
 	std::shared_ptr<Edge> e2(new Edge(true, s, f2->_start));

@@ -15,8 +15,6 @@ Analyzer::Analyzer(std::vector<Regex::Token> tokens)
 //
 void Analyzer::build_tree(std::vector<Regex::Token> tokens)
 {
-	uint16_t index = 0;
-
 	//stream already in postfix so stack is the natural choice to parse it
 	std::stack< std::shared_ptr<Node> > tree;
 
