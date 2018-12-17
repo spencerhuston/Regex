@@ -16,6 +16,9 @@
 #include "State.h"
 #include "Fragment.h"
 
+// 1.) Scan/tokenize
+// 2.) Parse/build NFA
+// 3.) Run/simulate NFA with a given string
 class Regex
 {
 	private:
@@ -32,9 +35,6 @@ class Regex
 			
 			//character that generated the token
 			uint8_t c;
-			
-			//used to convert from raw ascii since all characters are stored as char
-			bool number;
 		};
 
 		//token stream generated during scanning		

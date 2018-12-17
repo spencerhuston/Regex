@@ -31,11 +31,7 @@ std::vector<Regex::Token> Regex::scan(std::string expression)
 		else if (c == '?') t.op = Regex::QUESTION;
 		else if (c == '|') t.op = Regex::OR;
 		else if (c == '.') t.op = Regex::CAT;
-		else if (isalnum(c))
-		{
-			t.op = Regex::CHARACTER;
-			t.number = (isdigit(c)) ? true : false;
-		}
+		else if (isalnum(c)) t.op = Regex::CHARACTER;
 		
 		//if escaped character override token type to be a CHARACTER
 		if (escape)

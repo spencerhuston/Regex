@@ -3,6 +3,7 @@
 
 #include "State.h"
 
+// NFA fragment, can consist of any number of states/edges
 class Fragment
 {
 	public:

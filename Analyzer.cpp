@@ -7,14 +7,24 @@ Analyzer::Analyzer(std::vector<Regex::Token> tokens)
 	analyze();
 }
 
+//Builds parse tree from token stream
+//
+//	params: vector<Token> token, the original token stream
+//
+//	return: none
+//
 void Analyzer::build_tree(std::vector<Regex::Token> tokens)
 {
 	uint16_t index = 0;
 
+	//stream already in postfix so stack is the natural choice to parse it
 	std::stack< std::shared_ptr<Node> > tree;
 
 	for (auto const & token : tokens)
 	{
+		//character is always leaf
+		//OR and CAT have 2 children nodes
+		//*, ?, and + have only left child node since they are left-associative
 		switch (token.op)
 		{
 			case Regex::CHARACTER:
@@ -81,6 +91,7 @@ void Analyzer::build_tree(std::vector<Regex::Token> tokens)
 	tree.pop();
 }
 
+//finds operators below current precedence-1 op and removes them from the tree
 void Analyzer::check_prec(std::shared_ptr<Analyzer::Node> node)
 {
 	if (node == NULL)
@@ -114,7 +125,7 @@ void Analyzer::preorder(std::shared_ptr<Analyzer::Node> node)
 	}
 }
 
-//postorder traversal
+//postorder traversal to rebuild token stream
 void Analyzer::remake_tokens(std::shared_ptr<Analyzer::Node> node, std::vector<Regex::Token> & tokens)
 {
 	if (node == NULL)
@@ -145,6 +156,5 @@ void Analyzer::analyze()
 	for (auto const & t : tokens)
 		std::cout << t.op << ' ';
 	std::cout << '\n';
-
 	_tokens = tokens;	
 }

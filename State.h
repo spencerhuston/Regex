@@ -8,6 +8,7 @@
 
 class Edge;
 
+// NFA state
 class State
 {
 	public:

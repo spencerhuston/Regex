@@ -8,6 +8,7 @@
 
 class State;
 
+// transition edge between states
 class Edge
 {
 	public:

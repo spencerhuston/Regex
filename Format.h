@@ -12,6 +12,8 @@
 
 #include <iostream>
 
+// Shunting-yard algorithm implementation with extra preprocessing 
+// for [ - ] and special escaped characters (in Format::expand_range)
 class Format
 {
 	private:
