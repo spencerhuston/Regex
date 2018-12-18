@@ -339,6 +339,12 @@ std::shared_ptr<State> Regex::parse(std::vector<Regex::Token> tokens)
 		}
 	}
 
+	if (nfa.top())
+	{
+		std::cout << "NFA construction error\n";
+		return NULL;
+	}
+
 	std::shared_ptr<Fragment> end(nfa.top());
 	nfa.pop();
 

@@ -17,7 +17,11 @@ int main(int argc, char ** argv)
 		    		"	| 	or\n" +
 		    		"	- 	list alphabet in [ ]\n" +
 		    		"	( ) 	surround or's, ex: (a|b)\n" +
-				"	\\ 	escape next character\n";
+				"	\\ 	escape next character\n\n" +
+				"Special characters:\n" +
+				"	\\d	digits\n" +
+				"	\\l	lowercase letters\n" +
+				"	\\L 	uppercase letters\n";
 
 	if (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help")
 	{
@@ -28,14 +32,16 @@ int main(int argc, char ** argv)
 	{
 		Regex regex;
 		std::string expr = argv[1];
-		
+	
+		std::cout << std::string(argv[1]) << '\t' << std::string(argv[2]) << '\n';
+
 		//change to postfix expression		
 		Format format(expr);
 		expr = format.get_expression();
 
 		//get token list from scanner	
 		regex.set_tokens(regex.scan(expr));
-		
+	
 		//optimize/fix token stream
 		Analyzer analyzer(regex.get_tokens());
 		regex.set_tokens(analyzer.get_tokens());
@@ -45,10 +51,7 @@ int main(int argc, char ** argv)
 		start = regex.parse(regex.get_tokens());
 
 		if (start == NULL)
-		{
-			std::cout << "NFA construction error\n";
 			return 1;
-		}
 
 		for (int i = 2; i < argc; i++)
 			regex.run(start, std::string(argv[i]));

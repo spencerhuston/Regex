@@ -20,7 +20,9 @@ std::string Format::expand_range(std::string expression)
 
         //stores what's inside the square brackets
         std::vector<uint8_t> local;
-        bool in_bracket = false;
+	std::vector<uint8_t> reserved({'|', '*', '(', ')', '+', '?', '[', '-', ']'});
+        
+	bool in_bracket = false;
 
         for (int i = 0; i < expression.length(); i++)
         {
@@ -68,52 +70,60 @@ std::string Format::expand_range(std::string expression)
                         for (int j = (int)left; j <= (int)right; j++)
                                 local.push_back((uint8_t)j);
                 }
-		else if (c == '\\' && i + 1 < expression.length() && expression[i + 1] == 'd')
+		else if (c == '\\' && i + 1 < expression.length())
 		{
 			new_expr += '(';
+		
+			int start = 0, end = 0;
+			bool ns = true;
 
-			for (int j = 48; j < 57; j++)
+			switch (expression[i + 1])
 			{
-				new_expr += (uint8_t)j;
-				new_expr += '|';
-			}
-			
-			new_expr += (uint8_t)57;
-			new_expr += ')';
-			
-			i++;
-		}
-		else if (c == '\\' && i + 1 < expression.length() && expression[i + 1] == 'w')
-		{
-			new_expr += '(';
+				case 'l':
+					start = 97, end = 122;
+					break;
+				case 'L':
+					start = 65, end = 90;
+					break;
+				case 'W':
+					ns = false;
 
-			for (int j = 97; j < 122; j++)
-			{
-				new_expr += (uint8_t)j;
-				new_expr += '|';
+					break;
+				case 'd':
+					start = 48, end = 57; 
+					break;
+				case 'D':
+					ns = false;
+						
+					break;
+				case 'a':
+					
+					break;
+				case 's':
+					new_expr += (uint8_t)33;
+					break;
+				case 't':
+					new_expr += (uint8_t)9;
+					break;
+				default:
+					break;
 			}
-			
-			new_expr += (uint8_t)122;
-			new_expr += ')';
-			
-			i++;
-		}
-		else if (c == '\\' && i + 1 < expression.length() && expression[i + 1] == 'W')
-		{
-			new_expr += '(';
 
-			for (int j = 65; j < 90; j++)
+			if (ns) 
 			{
-				new_expr += (uint8_t)j;
-				new_expr += '|';
+				for (int j = start; j < end; j++)
+				{
+					new_expr += (uint8_t)j;
+					new_expr += '|';
+				}
+
+				new_expr += (uint8_t)end;
 			}
-			
-			new_expr += (uint8_t)90;
+
 			new_expr += ')';
 			
 			i++;
 		}	
-                	
                 else if (!in_bracket)
                         new_expr += c;
         }
