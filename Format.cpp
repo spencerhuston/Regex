@@ -70,7 +70,7 @@ std::string Format::expand_range(std::string expression)
                         for (int j = (int)left; j <= (int)right; j++)
                                 local.push_back((uint8_t)j);
                 }
-		else if (c == '\\' && i + 1 < expression.length())
+	      /*else if (c == '\\' && i + 1 < expression.length())
 		{
 			new_expr += '(';
 		
@@ -123,7 +123,7 @@ std::string Format::expand_range(std::string expression)
 			new_expr += ')';
 			
 			i++;
-		}	
+		}*/
                 else if (!in_bracket)
                         new_expr += c;
         }

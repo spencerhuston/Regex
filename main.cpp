@@ -17,11 +17,7 @@ int main(int argc, char ** argv)
 		    		"	| 	or\n" +
 		    		"	- 	list alphabet in [ ]\n" +
 		    		"	( ) 	surround or's, ex: (a|b)\n" +
-				"	\\ 	escape next character\n\n" +
-				"Special characters:\n" +
-				"	\\d	digits\n" +
-				"	\\l	lowercase letters\n" +
-				"	\\L 	uppercase letters\n";
+				"	\\ 	escape next character\n\n";
 
 	if (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help")
 	{
