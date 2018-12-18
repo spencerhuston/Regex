@@ -33,8 +33,6 @@ int main(int argc, char ** argv)
 		Regex regex;
 		std::string expr = argv[1];
 	
-		std::cout << std::string(argv[1]) << '\t' << std::string(argv[2]) << '\n';
-
 		//change to postfix expression		
 		Format format(expr);
 		expr = format.get_expression();
