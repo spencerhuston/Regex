@@ -26,6 +26,7 @@ Support:
             - \d: digits
             - \w: lowercase letters
             - \W: uppercase letters 
+            - \w: alpanumeric
 
         - To be added:
             - ^ and $ to match patterns at beginning/end of given string
