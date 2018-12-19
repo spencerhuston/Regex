@@ -7,7 +7,17 @@ To run (single quotes are essential around the arguments):
 
 Support:
 
-    Characters: *, +, ?, |, [ - ], \, ( ) with nesting, and concatenation
+    Characters: 
+        * 
+        + 
+        ? 
+        | 
+        [ - ] 
+        \ 
+        { , } (does NOT nest)
+        ( ) with nesting
+        concatenation
+        
     Other: 
         
         - variadic argument list
@@ -24,15 +34,13 @@ Support:
             
             - \s: whitespace
            
-            - \S: no whitespace
+            - \S: visible characters
             
             - Whitespace characters: \n, \t, \r, \v, and \f
 
         - To be added:
         
             - ^ and $ to match patterns at beginning/end of given string
-
-            - Ranged repetition: a{x,y} for repeating 'a' at least x times up to y times
     
             - Escaping reserved characters (\?, \+, etc.)
 
