@@ -14,23 +14,25 @@ Support:
         
         - -h or --help to display usage/characters
         
-        - Special escaped characters (working):
+        - Special escaped characters:
     
-            - \d: all digits
+            - \d: digits
     
-            - \w: all lowercase letters
+            - \w: lowercase letters
     
-            - \W: all uppercase letters
+            - \W: uppercase letters
+            
+            - \s: whitespace
+           
+            - \S: no whitespace
+            
+            - Whitespace characters: \n, \t, \r, \v, and \f
 
         - To be added:
+        
+            - ^ and $ to match patterns at beginning/end of given string
 
             - Ranged repetition: a{x,y} for repeating 'a' at least x times up to y times
-        
-            - \a: any character
-    
-            - \D: all non-digits
-    
-            - whitespace characters (\s for space, \t for tab, etc.)
     
             - Escaping reserved characters (\?, \+, etc.)
 
