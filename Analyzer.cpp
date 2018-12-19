@@ -81,7 +81,8 @@ void Analyzer::build_tree(std::vector<Regex::Token> tokens)
 				break;
 			default:
 				std::cout << "Analysis error\n";
-				return;
+				exit(1);
+				break;
 		}
 	}
 

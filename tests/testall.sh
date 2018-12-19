@@ -54,6 +54,9 @@ function printResults {
 	echo "?"
 	runtest '4' 'a?c?' 'a' 'c' 'ac' 'ca' 'aacc'
 
+	echo "{ , }"
+	runtest '5' 'a{2,3}' 'a' 'aa' 'aaa' 'aaaa' 'ab'
+
 	echo "|"
 	runtest '6' 'a|b|c' 'a' 'b' 'c' 'ab' 'ad'
 
@@ -74,6 +77,9 @@ function printResults {
 
 	echo "group ?"
 	runtest '11' '(ab)?' 'ab' 'abab' 'a' 'b' 'c'
+
+	echo "group { , }"
+	runtest '12' '(ab){2,3}' 'abab' 'ababab' 'ab' 'ababc' 'ababa'
 }
 
 printResults

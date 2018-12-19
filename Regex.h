@@ -43,9 +43,9 @@ class Regex
 		std::vector<Token> _tokens;
 
 	public:
-		std::vector<Token> scan(std::string expression);
-		std::shared_ptr<State> parse(std::vector<Token> tokens);
-		void run(std::shared_ptr<State> start, std::string str);
+		std::vector<Token> scan(const std::string expression);
+		std::shared_ptr<State> parse(const std::vector<Token> tokens);
+		void run(const std::shared_ptr<State> start, const std::string str);
 
 		//operator parsing
 		void character(std::stack< std::shared_ptr<Fragment> > & nfa, const Regex::Token token);

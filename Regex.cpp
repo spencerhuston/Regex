@@ -6,7 +6,7 @@
 //
 //	return: std::vector<Regex::Token>, token stream of the given expression
 //
-std::vector<Regex::Token> Regex::scan(std::string expression)
+std::vector<Regex::Token> Regex::scan(const std::string expression)
 {
 	std::vector<Token> tokens;
 
@@ -292,7 +292,7 @@ void Regex::_or(std::stack< std::shared_ptr<Fragment> > & nfa)
 //
 //	return: State *, the beginning state of the NFA
 //
-std::shared_ptr<State> Regex::parse(std::vector<Regex::Token> tokens)
+std::shared_ptr<State> Regex::parse(const std::vector<Regex::Token> tokens)
 {
 	std::stack< std::shared_ptr<Fragment> > nfa; 
 
@@ -381,7 +381,7 @@ void Regex::add_states(std::vector< std::shared_ptr<State> > & nstates, std::sha
 //
 //	return: none, void
 //	
-void Regex::run(std::shared_ptr<State> start, std::string str)
+void Regex::run(const std::shared_ptr<State> start, const std::string str)
 {
 	//current possible states and next possible states
 	std::vector< std::shared_ptr<State> > cstates;

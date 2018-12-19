@@ -8,7 +8,7 @@ Format::Format(std::string expression)
 	_expression = in_to_post(_expression);
 }
 
-bool Format::expand_special(std::string & new_expr, uint8_t c)
+bool Format::expand_special(std::string & new_expr, const uint8_t c)
 {
 	int start = 0, end = 0;
 	bool ns = true;
@@ -143,6 +143,21 @@ bool Format::expand_special(std::string & new_expr, uint8_t c)
 	return true;
 }
 
+bool Format::matches(const uint8_t left, const uint8_t right)
+{
+	if (isalpha(left) && isalpha(right) && right > left)
+	{
+		if (isupper(left) && isupper(right))
+			return true;
+		else if (islower(left) && islower(right))
+			return true;
+	}
+	else if (isdigit(left) && isdigit(right) && left < right)
+			return true;
+
+	return false;
+}
+
 // expands [x-z] into (x|y|z), makes single pass scanning possible
 //
 //      params: std::string expression, takes in the original expression to re-format for actual scanner
@@ -162,7 +177,9 @@ std::string Format::expand_range(std::string expression)
         {
                 uint8_t c = expression[i];
 
-                if (c == '[')
+		if (i + 1 < expression.length() && expression[i + 1] == '{')
+			continue;
+		else if (c == '[')
                 {
                         if (in_bracket)
                         {
@@ -201,9 +218,86 @@ std::string Format::expand_range(std::string expression)
                         uint8_t left = expression[i - 1];
                         uint8_t right = expression[i + 1];
 
+			if (!matches(left, right))
+			{
+				std::cout << "Incorrect range: " << left << '-' << right << '\n';
+				exit(1);
+			}	
+
                         for (int j = (int)left; j <= (int)right; j++)
                                 local.push_back((uint8_t)j);
                 }
+		else if (c == '{')
+		{
+			uint8_t expr;
+			uint16_t start_expr;
+
+			if (i - 1 >= 0)
+				expr = expression[i - 1], start_expr = i - 1;
+			else
+			{
+				std::cout << "Repetition bracket error\n";
+				exit(1);
+			}
+			
+			i++;
+
+			uint16_t start = 0, end = 0;
+			if (isdigit(expression[i]) && i + 1 < expression.length() && expression[i + 1] == ',')
+				start = expression[i] - 48;
+			else
+			{
+				std::cout << "Repetition bracket error\n";
+				exit(1);
+			}
+
+			if (i + 3 < expression.length() && expression[i + 3] == '}' && isdigit(expression[i + 2]))
+			{
+				i += 2;
+				end = expression[i] - 48;
+				i++;
+			}
+			else
+			{
+				std::cout << "Repetition bracket error\n";
+				exit(1);
+			}
+
+			if (expr == ')')
+			{
+				uint16_t parens = 0, start_i = start_expr;
+
+				while (start_expr - 1 >= 0)
+				{
+					if (expression[start_expr] == ')') parens++;
+					else if (expression[start_expr] == '(') parens--;
+
+					if (parens == 0 && start_expr != start_i)
+						break;	
+
+					start_expr--;	
+				}
+
+				std::string rep;
+				rep = expression.substr(start_expr + 1, start_i - start_expr - 1);
+				new_expr = new_expr.substr(0, start_expr);	
+
+				for (int j = 0; j < start; j++)
+					new_expr += std::string("(") + rep + ")";
+				for (int j = 0; j < end - start; j++)
+					new_expr += std::string("(") + rep + ")?";
+			}
+			else
+			{
+				for (int j = 0; j < start; j++)
+					new_expr += expr;
+				for (int j = 0; j < end - start; j++)
+				{
+					new_expr += expr;
+					new_expr += '?';
+				}
+			}
+		}
 	      	else if (c == '\\' && i + 1 < expression.length())
 		{
 			if (expand_special(new_expr, (uint8_t)expression[i + 1])) 

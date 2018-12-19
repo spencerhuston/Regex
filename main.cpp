@@ -37,7 +37,7 @@ int main(int argc, char ** argv)
 		//change to postfix expression		
 		Format format(expr);
 		expr = format.get_expression();
-
+		
 		//get token list from scanner	
 		regex.set_tokens(regex.scan(expr));
 	
