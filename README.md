@@ -8,41 +8,30 @@ To run (single quotes are essential around the arguments):
 Support:
 
     Operations: 
-        * 
-        + 
-        ? 
-        | 
-        [ - ] 
-        \ 
-        { , } (does NOT nest)
-        ( ) with nesting
-        concatenation
+        - *     zero or more
+        - +     one or more
+        - ?     zero or one
+        - |     or 
+        - [ - ] ranged or: [a-c] = (a|b|c) 
+        - \     escape characters
+        - { , } ranged repetition: {1,3} = aa?a?, does NOT nest
+        - ( )   group: (abc)* = zero or more 'abc'
+        - concatenation
         
     Other: 
         
         - variadic argument list
-        
         - -h or --help to display usage/characters
-        
         - Special escaped characters:
-    
             - \d: digits
-    
             - \w: lowercase letters
-    
-            - \W: uppercase letters
-            
-            - \s: whitespace
-           
-            - \S: visible characters
-            
-            - Whitespace characters: \n, \t, \r, \v, and \f
+            - \W: uppercase letters 
 
         - To be added:
-        
             - ^ and $ to match patterns at beginning/end of given string
-    
             - Escaping reserved characters (\?, \+, etc.)
+            - Whitespaces
+            - Pattern match on files
 
 Precedence:
 
