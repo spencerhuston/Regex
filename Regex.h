@@ -37,6 +37,8 @@ class Regex
 			uint8_t c;
 		};
 
+		
+
 		//token stream generated during scanning		
 		std::vector<Token> _tokens;
 

@@ -26,6 +26,9 @@ class Format
 		std::string add_cat(std::string expression);
 		std::string in_to_post(std::string expression);
 
+		//helper methods
+		bool expand_special(std::string & new_expr, uint8_t c);
+
 		inline uint8_t get_precedence(uint8_t c)
 		{ return (precedence.find(c) == precedence.end()) ? 6 : precedence.find(c)->second; }
 

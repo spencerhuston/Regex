@@ -18,28 +18,13 @@ std::vector<Regex::Token> Regex::scan(std::string expression)
 
 		uint8_t c = expression[i]; 
 
-		if (c == '\\')
-		{
-			if (!escape)
-			{
-				escape = true;
-				continue;
-			}
-		} //else match corresponding token
-		else if (c == '*') t.op = Regex::STAR;
+		if (c == '*') t.op = Regex::STAR;
 		else if (c == '+') t.op = Regex::PLUS;
 		else if (c == '?') t.op = Regex::QUESTION;
 		else if (c == '|') t.op = Regex::OR;
 		else if (c == '.') t.op = Regex::CAT;
-		else if (isalnum(c)) t.op = Regex::CHARACTER;
+		else t.op = Regex::CHARACTER;
 		
-		//if escaped character override token type to be a CHARACTER
-		if (escape)
-		{
-			t.op = Regex::CHARACTER;
-			escape = false;
-		}
-
 		t.c = c;
 		tokens.push_back(t);	
 	}
@@ -59,7 +44,7 @@ void Regex::change_edges(std::shared_ptr<Fragment> & f1, std::shared_ptr<Fragmen
 {
 	if (f1->_edges->size() == 0)
 	{
-		std::shared_ptr<Edge> e(new Edge(true, f1->_end, NULL));
+		std::shared_ptr<Edge> e(new Edge('\0', true, f1->_end, NULL));
 		e->_out = f2->_start;
 		e->_modifiable = true;
 		f1->_edges->push_back(e);
@@ -75,7 +60,7 @@ void Regex::change_edges(std::shared_ptr<Fragment> & f1, std::shared_ptr<State> 
 {
 	if (f1->_edges->size() == 0)
 	{
-		std::shared_ptr<Edge> e(new Edge(true, f1->_end, NULL));
+		std::shared_ptr<Edge> e(new Edge('\0', true, f1->_end, NULL));
 		e->_out = s2;
 		e->_modifiable = true;
 		f1->_edges->push_back(e);
@@ -92,7 +77,7 @@ void Regex::change_edges(Fragment & f1, Fragment & f2)
 {
 	if (f1._edges->size() == 0)
 	{
-		std::shared_ptr<Edge> e(new Edge(true, f1._end, f2._start));
+		std::shared_ptr<Edge> e(new Edge('\0', true, f1._end, f2._start));
 		e->_modifiable = true;
 		f1._edges->push_back(e);
 	}
@@ -159,7 +144,7 @@ void Regex::star(std::stack< std::shared_ptr<Fragment> > & nfa)
 	for (auto const & e : f1->_start->_edges)
 		e->_modifiable = false;
 
-	std::shared_ptr<Edge> e(new Edge(true, f1->_start, NULL));
+	std::shared_ptr<Edge> e(new Edge('\0', true, f1->_start, NULL));
 	e->_modifiable = true;
 	f1->_start->_edges.push_back(e);
 	
@@ -217,7 +202,7 @@ void Regex::plus(std::stack< std::shared_ptr<Fragment> > & nfa)
 	for (auto const & e : f2._start->_edges)
 		e->_modifiable = false;
 
-	std::shared_ptr<Edge> e(new Edge(true, f2._start, NULL));
+	std::shared_ptr<Edge> e(new Edge('\0', true, f2._start, NULL));
 	e->_modifiable = true;
 	f2._start->_edges.push_back(e);
 
@@ -240,9 +225,9 @@ void Regex::question(std::stack< std::shared_ptr<Fragment> > & nfa)
 	std::shared_ptr<Fragment> f2(new Fragment(f2_start));
 	
 	std::shared_ptr<State> s(new State());
-	std::shared_ptr<Edge> e1(new Edge(true, s, f1->_start));
+	std::shared_ptr<Edge> e1(new Edge('\0', true, s, f1->_start));
 	e1->_modifiable = true;
-	std::shared_ptr<Edge> e2(new Edge(true, s, f2->_start));
+	std::shared_ptr<Edge> e2(new Edge('\0', true, s, f2->_start));
 	e2->_modifiable = true;
 
 	s->_edges.push_back(e1), s->_edges.push_back(e2);
@@ -254,7 +239,7 @@ void Regex::question(std::stack< std::shared_ptr<Fragment> > & nfa)
 
 	change_edges(f1, s2);
 
-	std::shared_ptr<Edge> f2_e(new Edge(true, f2_start, s2));	
+	std::shared_ptr<Edge> f2_e(new Edge('\0', true, f2_start, s2));	
 	f2_e->_modifiable = true;
 	f2_start->_edges.push_back(f2_e);
 	f2->_edges = &f2_start->_edges;
@@ -280,9 +265,9 @@ void Regex::_or(std::stack< std::shared_ptr<Fragment> > & nfa)
 	std::shared_ptr<State> s(new State());
 	s->_match = false;
 
-	std::shared_ptr<Edge> e1(new Edge(true, s, f1->_start));
+	std::shared_ptr<Edge> e1(new Edge('\0', true, s, f1->_start));
 	e1->_modifiable = true;
-	std::shared_ptr<Edge> e2(new Edge(true, s, f2->_start));
+	std::shared_ptr<Edge> e2(new Edge('\0', true, s, f2->_start));
 	e2->_modifiable = true;
 
 	s->_edges.push_back(e1), s->_edges.push_back(e2);

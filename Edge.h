@@ -29,14 +29,6 @@ class Edge
 			_in = in;
 			_out = out;
 		}
-
-		//constructor for empty edge (sigma)
-		Edge(bool sigma, std::shared_ptr<State> in, std::shared_ptr<State> out)
-		{
-			_sigma = sigma;
-			_in = in;
-			_out = out;
-		}
 };
 
 #endif
