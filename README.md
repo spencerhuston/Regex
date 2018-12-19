@@ -7,7 +7,7 @@ To run (single quotes are essential around the arguments):
 
 Support:
 
-    Characters: 
+    Operations: 
         * 
         + 
         ? 
