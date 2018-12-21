@@ -15,7 +15,7 @@ int main(int argc, char ** argv)
 		    		"	? 	0 or 1 time\n" +
 		     		"	[x-z] 	x or y or z\n" +
 		    		"	| 	or\n" +
-		    		"	- 	list alphabet in [ ]\n" +
+		    		"	{x,y}	x times up to and including y times\n" +
 		    		"	( ) 	surround or's, ex: (a|b)\n" +
 				"	\\ 	escape next character\n\n" +
 				"Special escaped characters:\n" +

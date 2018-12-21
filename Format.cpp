@@ -245,6 +245,8 @@ std::string Format::expand_range(std::string expression)
 			uint16_t start = 0, end = 0;
 			if (isdigit(expression[i]) && i + 1 < expression.length() && expression[i + 1] == ',')
 				start = expression[i] - 48;
+			else if (expression[i] == ',' && i + 1 < expression.length() && isdigit(expression[i + 1]))
+			       	start = 0;	
 			else
 			{
 				std::cout << "Repetition bracket error\n";
