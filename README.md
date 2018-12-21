@@ -19,13 +19,13 @@ Support:
         - concatenation
         
     Other: 
-        
         - variadic argument list
         - -h or --help to display usage/characters
         - Special escaped characters:
             - \d: digits
-            - \w: lowercase letters
-            - \W: uppercase letters 
+            - \l: lowercase letters
+            - \L: uppercase letters 
+            - \w: alpanumeric
 
         - To be added:
             - ^ and $ to match patterns at beginning/end of given string
